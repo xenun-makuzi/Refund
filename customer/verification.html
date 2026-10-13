@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1b20">
+  <meta name="description" content="Submit identity documents securely for Refund account verification.">
+  <title>Identity verification | Refund</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/identity-verification.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/identity-verification.js" defer></script>
+</head>
+<body class="verification-page">
+  <a class="skip-link" href="#main-content">Skip to verification form</a>
+  <header class="verification-header">
+    <a class="brand" href="dashboard.html" aria-label="Refund dashboard"><span class="brand-mark">r.</span><span>refund<span class="brand-period">.</span></span></a>
+    <nav aria-label="Account navigation">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="support.html">Support</a>
+      <button id="verification-sign-out" type="button" class="header-signout">Sign out</button>
+    </nav>
+  </header>
+
+  <main id="main-content" class="verification-main">
+    <div class="page-eyebrow"><span></span> ACCOUNT SECURITY</div>
+    <h1>Identity verification</h1>
+    <p class="page-lead">Submit an identity document so the team can review your account. Your document stays in private storage and is only available to you and authorized reviewers.</p>
+
+    <div id="verification-message" class="notice" role="status" aria-live="polite" hidden></div>
+
+    <section class="status-card" id="status-card" aria-labelledby="verification-status-title">
+      <div class="status-icon" id="verification-status-icon" aria-hidden="true">⌑</div>
+      <div class="status-copy">
+        <div class="section-label">CURRENT STATUS</div>
+        <h2 id="verification-status-title">Checking your status…</h2>
+        <p id="verification-status-description">We are loading your current verification status.</p>
+        <p id="verification-review-note" class="review-note" hidden></p>
+      </div>
+      <span id="verification-status-badge" class="status-badge">Checking</span>
+    </section>
+
+    <div class="verification-layout">
+      <section class="form-card" id="identity-form-card" aria-labelledby="submit-document-title">
+        <div class="form-card-heading">
+          <div class="section-label">SUBMIT DOCUMENTS</div>
+          <h2 id="submit-document-title">Help us verify it's you</h2>
+          <p>Use a valid government-issued document. Make sure the text and photograph are clear and all corners are visible.</p>
+        </div>
+
+        <form id="identity-verification-form" novalidate>
+          <label for="document-type">Document type</label>
+          <select id="document-type" name="document_type" required>
+            <option value="">Select a document</option>
+            <option value="passport">Passport</option>
+            <option value="national_id">National identity card</option>
+            <option value="drivers_license">Driver's license</option>
+            <option value="residence_permit">Residence permit</option>
+            <option value="other">Other government-issued ID</option>
+          </select>
+
+          <div class="upload-field">
+            <label for="document-front">Main side / photo page <span class="required-mark">Required</span></label>
+            <p class="field-hint">JPG, PNG, WebP, or PDF · up to 10 MB</p>
+            <input id="document-front" name="document_front" type="file" accept="image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf" required>
+            <span class="selected-file" id="front-file-name">No file selected</span>
+          </div>
+
+          <div class="upload-field">
+            <label for="document-back">Back side <span class="optional-mark">Optional</span></label>
+            <p class="field-hint">If your document has important information on both sides, upload the back too. Passports can usually use the photo page only.</p>
+            <input id="document-back" name="document_back" type="file" accept="image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf">
+            <span class="selected-file" id="back-file-name">No file selected</span>
+          </div>
+
+          <label class="consent-check" for="identity-consent">
+            <input id="identity-consent" name="identity_consent" type="checkbox" required>
+            <span>I confirm this is my document and understand it will be used for identity verification according to the <a href="../privacy.html" target="_blank" rel="noopener">privacy notice</a>.</span>
+          </label>
+
+          <div class="upload-security-note"><span aria-hidden="true">▣</span><p><strong>Private document upload</strong><br>Files are not made publicly accessible. Do not upload passwords, payment card details, wallet recovery phrases, or documents not requested for verification.</p></div>
+          <button class="submit-button" id="identity-submit-button" type="submit"><span class="submit-label">Submit for review</span><span class="submit-spinner" aria-hidden="true"></span></button>
+          <p class="form-footnote">Submitting an ID does not automatically verify the account. An authorized reviewer must complete the review.</p>
+        </form>
+      </section>
+
+      <aside class="guide-card" aria-labelledby="before-upload-title">
+        <div class="guide-symbol" aria-hidden="true">✓</div>
+        <h2 id="before-upload-title">Before you upload</h2>
+        <ul>
+          <li>Make sure the document is valid and not expired.</li>
+          <li>Use a clear, uncropped image with readable details.</li>
+          <li>Upload only the document type requested by this form.</li>
+          <li>Never send identity documents through social media messages or public comments.</li>
+        </ul>
+        <div class="guide-divider"></div>
+        <h3>What happens next?</h3>
+        <ol class="steps-list">
+          <li><span>1</span><div><strong>Secure submission</strong><small>Your file is stored privately.</small></div></li>
+          <li><span>2</span><div><strong>Human review</strong><small>An authorized reviewer checks the submission.</small></div></li>
+          <li><span>3</span><div><strong>Status update</strong><small>You'll see the decision here and receive an in-app notification.</small></div></li>
+        </ol>
+        <a class="support-link" href="support.html">Questions about verification? Contact support →</a>
+      </aside>
+    </div>
+
+    <section class="history-card" aria-labelledby="history-title">
+      <div class="history-heading"><div><div class="section-label">YOUR RECORDS</div><h2 id="history-title">Verification history</h2></div><span class="history-note">Document names and file paths are not displayed here.</span></div>
+      <div id="verification-history" class="history-list"><p class="empty-history">Loading your submission history…</p></div>
+    </section>
+    <footer class="verification-footer"><span>© <span id="verification-year"></span> Refund</span><span>Only upload documents if you understand how they will be used.</span><a href="../privacy.html">Privacy notice</a></footer>
+  </main>
+</body>
+</html>

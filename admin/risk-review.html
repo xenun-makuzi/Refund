@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#08171b">
+  <title>Risk review | Refund Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/admin-control-center.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../js/config.js"></script><script src="../js/supabase-client.js"></script><script src="../js/risk-review-admin.js" defer></script>
+</head>
+<body class="control-page">
+  <header class="control-topbar"><a class="control-brand" href="../index.html"><span class="control-brand-mark">R</span><span>refund<span>.</span><small>OPERATIONS</small></span></a><span class="control-context">Risk review</span><div class="control-user"><div><strong id="rr-user-email">Checking access…</strong><small>Administrator workspace</small></div><button id="rr-signout" class="button button-quiet" type="button">Sign out</button></div></header>
+  <div class="control-shell"><aside class="control-sidebar"><p class="side-label">WORKSPACE</p><a href="claims.html">Claims queue</a><a href="recovery.html">Recovery ledger</a><a href="loans.html">Loans &amp; withdrawals</a><a href="messages.html">Customer messages</a><a href="support.html">Support &amp; complaints</a><a href="workflows.html">Workflow builder</a><a class="is-active" href="risk-review.html">Risk review</a><a href="notifications.html">Notifications</a><div class="side-note"><strong>Review, don't accuse</strong><p>Flags are internal indicators for human review. A flag is not a finding of fraud or wrongdoing.</p></div></aside>
+  <main id="main-content" class="control-main">
+    <div id="rr-global-message" class="control-message" role="status" aria-live="polite" hidden></div>
+    <div class="control-heading"><div><p class="control-eyebrow">OPERATIONS / INTERNAL CONTROLS</p><h1>Risk review queue</h1><p>Record and resolve internal review flags with an auditable decision history.</p></div><button id="rr-refresh" class="button button-outline" type="button">Refresh</button></div>
+    <div class="control-notice"><strong>Privacy:</strong> this workspace is admin-only. Keep notes factual and limited to information needed for review. Do not paste full identity numbers, passwords, payment credentials, or wallet private keys into notes.</div>
+    <div class="control-grid">
+      <section class="control-panel"><div class="panel-heading"><div><p class="panel-kicker">01 / RECORD</p><h2>Create review flag</h2><p>Flag a single claim, customer, or loan application for further review.</p></div></div>
+        <form id="rr-create-form" class="control-form">
+          <label for="rr-target-type">Subject type</label><select id="rr-target-type"><option value="claim">Claim</option><option value="user">Customer account</option><option value="loan">Loan application</option></select>
+          <label for="rr-target">Subject</label><select id="rr-target" required><option value="">Loading records…</option></select>
+          <div class="field-row"><div><label for="rr-category">Review category</label><select id="rr-category"><option value="manual_review">Manual review</option><option value="duplicate_claim">Possible duplicate claim</option><option value="identity_mismatch">Identity mismatch</option><option value="inconsistent_evidence">Inconsistent evidence</option><option value="unusual_payout_destination">Unusual payout destination</option><option value="suspicious_pattern">Unusual pattern</option><option value="other">Other</option></select></div><div><label for="rr-severity">Severity</label><select id="rr-severity"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option><option value="critical">Critical</option></select></div></div>
+          <label for="rr-summary">Summary</label><input id="rr-summary" required maxlength="300" minlength="5" placeholder="Brief, factual reason for review">
+          <label for="rr-details">Internal context (optional)</label><textarea id="rr-details" maxlength="4000" rows="4" placeholder="Record observable facts and next verification step. Avoid unsupported conclusions."></textarea>
+          <button class="button button-primary" type="submit">Create internal flag</button>
+        </form>
+      </section>
+      <section class="control-panel"><div class="panel-heading"><div><p class="panel-kicker">02 / RESOLVE</p><h2>Update a review</h2><p>Assign a reviewer, change status, and record a resolution when applicable.</p></div></div>
+        <form id="rr-update-form" class="control-form">
+          <label for="rr-flag-select">Review flag</label><select id="rr-flag-select" required><option value="">Load flags first…</option></select>
+          <label for="rr-new-status">Status</label><select id="rr-new-status"><option value="open">Open</option><option value="under_review">Under review</option><option value="resolved">Resolved</option><option value="dismissed">Dismissed</option></select>
+          <label for="rr-assignee">Assign to (optional)</label><select id="rr-assignee"><option value="">Keep current assignee</option></select>
+          <label for="rr-resolution-note">Decision / resolution note</label><textarea id="rr-resolution-note" maxlength="2000" rows="4" placeholder="Required to resolve or dismiss a flag"></textarea>
+          <button class="button button-primary" type="submit">Save review update</button>
+        </form>
+        <div id="rr-selected-detail" class="selected-summary">Choose a flag to review its context and history.</div>
+      </section>
+    </div>
+    <section class="control-panel"><div class="panel-heading"><div><p class="panel-kicker">03 / TRACK</p><h2>Internal review flags</h2><p>Only administrator accounts can view this queue.</p></div><span id="rr-count" class="count-chip">Loading…</span></div>
+      <div class="control-toolbar"><label for="rr-status-filter">Filter status</label><select id="rr-status-filter"><option value="all">All statuses</option><option value="open">Open</option><option value="under_review">Under review</option><option value="resolved">Resolved</option><option value="dismissed">Dismissed</option></select></div>
+      <div class="control-table-wrap"><table class="control-table"><thead><tr><th>Review flag</th><th>Severity</th><th>Status</th><th>Created</th><th>Assigned to</th><th>Action</th></tr></thead><tbody id="rr-flags-body"><tr><td colspan="6" class="table-empty">Loading review flags…</td></tr></tbody></table></div><div id="rr-empty" class="empty-state" hidden><h3>No review flags</h3><p>No flags match the current filter.</p></div>
+    </section>
+    <div class="control-grid"><section class="control-panel"><div class="panel-heading"><div><p class="panel-kicker">04 / AUDIT</p><h2>Selected flag history</h2><p>Records of creation, assignment, and status changes.</p></div></div><div id="rr-history" class="event-list"><p class="muted">Select a review flag to load history.</p></div></section><section class="control-panel"><div class="panel-heading"><div><p class="panel-kicker">05 / MONITOR</p><h2>Recent administrative actions</h2><p>Workflow and risk-review actions recorded by this module.</p></div></div><div id="rr-audit-feed" class="event-list"><p class="muted">Loading audit events…</p></div></section></div>
+  </main></div>
+</body></html>

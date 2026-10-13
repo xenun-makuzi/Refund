@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#08171b"><title>Workflow builder | Refund Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/admin-control-center.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../js/config.js"></script><script src="../js/supabase-client.js"></script><script src="../js/workflows-admin.js" defer></script>
+</head>
+<body class="control-page">
+  <header class="control-topbar"><a class="control-brand" href="../index.html"><span class="control-brand-mark">R</span><span>refund<span>.</span><small>OPERATIONS</small></span></a><span class="control-context">Workflow builder</span><div class="control-user"><div><strong id="wf-user-email">Checking access…</strong><small id="wf-user-role">Administrator workspace</small></div><button id="wf-signout" class="button button-quiet" type="button">Sign out</button></div></header>
+  <div class="control-shell"><aside class="control-sidebar"><p class="side-label">WORKSPACE</p><a href="claims.html">Claims queue</a><a href="recovery.html">Recovery ledger</a><a href="loans.html">Loans &amp; withdrawals</a><a href="messages.html">Customer messages</a><a href="support.html">Support &amp; complaints</a><a class="is-active" href="workflows.html">Workflow builder</a><a href="risk-review.html">Risk review</a><a href="notifications.html">Notifications</a><div class="side-note"><strong>Controlled changes</strong><p>Workflows should be designed while inactive, reviewed, then activated. Existing running cases keep their assigned workflow.</p></div></aside>
+  <main id="main-content" class="control-main">
+    <div id="wf-global-message" class="control-message" role="status" aria-live="polite" hidden></div>
+    <div class="control-heading"><div><p class="control-eyebrow">OPERATIONS / CONFIGURATION</p><h1>Claim workflow builder</h1><p>Configure claim stages by claim type and intake source, then assign a workflow to an individual case.</p></div><button id="wf-refresh" class="button button-outline" type="button">Refresh</button></div>
+    <div class="control-notice"><strong>How this works:</strong> these workflow stages add a configurable process and customer-visible timeline. The existing claim status remains a separate, broader status field.</div>
+    <div class="control-grid">
+      <section class="control-panel"><div class="panel-heading"><div><p class="panel-kicker">01 / DEFINE</p><h2>Create workflow</h2><p>Inactive by default. Add the ordered steps before activating.</p></div></div>
+        <form id="wf-create-form" class="control-form">
+          <label for="wf-name">Workflow name</label><input id="wf-name" maxlength="120" required placeholder="Example: Scam recovery review">
+          <label for="wf-slug">Unique slug</label><input id="wf-slug" maxlength="120" pattern="[a-z0-9]+(-[a-z0-9]+)*" required placeholder="scam-recovery-review"><small class="field-hint">Lowercase letters, numbers, and hyphens.</small>
+          <label for="wf-description">Description</label><textarea id="wf-description" rows="3" maxlength="2000" placeholder="When this workflow should be used"></textarea>
+          <div class="field-row"><div><label for="wf-category">Claim category</label><select id="wf-category"><option value="all">All categories</option><option value="purchase_refund">Purchase refund</option><option value="scam_recovery">Scam recovery</option><option value="tax_refund">Tax refund</option><option value="service_dispute">Service dispute</option><option value="other">Other</option></select></div><div><label for="wf-origin">Intake source</label><select id="wf-origin"><option value="all">All sources</option><option value="direct">Direct claim</option><option value="partner_referral">Partner referral</option></select></div></div>
+          <button class="button button-primary" type="submit">Create workflow</button>
+        </form>
+      </section>
+      <section class="control-panel"><div class="panel-heading"><div><p class="panel-kicker">02 / DESIGN</p><h2>Workflow stages</h2><p>Select an inactive workflow, then add stages in order.</p></div></div>
+        <label for="wf-step-template">Workflow</label><select id="wf-step-template"><option value="">Load workflows first…</option></select>
+        <div id="wf-selected-summary" class="selected-summary">Choose a workflow to see its stages.</div>
+        <form id="wf-step-form" class="control-form compact-form">
+          <div class="field-row"><div><label for="wf-step-key">Step key</label><input id="wf-step-key" pattern="[a-z0-9]+(_[a-z0-9]+)*" maxlength="80" required placeholder="evidence_review"></div><div><label for="wf-step-label">Stage label</label><input id="wf-step-label" maxlength="120" required placeholder="Evidence review"></div></div>
+          <label for="wf-step-description">Description</label><input id="wf-step-description" maxlength="1000" placeholder="What needs to happen in this stage">
+          <div class="field-row"><label class="check-line"><input id="wf-step-visible" type="checkbox" checked> Visible to customer</label><label class="check-line"><input id="wf-step-evidence" type="checkbox"> Evidence required</label></div>
+          <label class="check-line"><input id="wf-step-terminal" type="checkbox"> This is the final stage</label>
+          <button id="wf-add-step" class="button button-outline" type="submit">Add stage</button>
+        </form>
+      </section>
+    </div>
+    <section class="control-panel"><div class="panel-heading"><div><p class="panel-kicker">03 / REVIEW</p><h2>Workflow templates</h2><p>Activate only after confirming that the last stage is marked final.</p></div><span id="wf-template-count" class="count-chip">— templates</span></div><div id="wf-template-list" class="template-list"><p class="muted">Loading workflow templates…</p></div></section>
+    <div class="control-grid">
+      <section class="control-panel"><div class="panel-heading"><div><p class="panel-kicker">04 / ASSIGN</p><h2>Assign to a claim</h2><p>Only active workflows that match the claim category and source can be assigned.</p></div></div>
+        <form id="wf-assign-form" class="control-form"><label for="wf-claim">Claim</label><select id="wf-claim" required><option value="">Load claims first…</option></select><label for="wf-assign-template">Active workflow</label><select id="wf-assign-template" required><option value="">No active workflows</option></select><label for="wf-assign-note">Customer-visible starting note (optional)</label><textarea id="wf-assign-note" rows="2" maxlength="2000" placeholder="A suitable message for the customer"></textarea><button class="button button-primary" type="submit">Assign workflow</button></form>
+      </section>
+      <section class="control-panel"><div class="panel-heading"><div><p class="panel-kicker">05 / ADVANCE</p><h2>Move a case forward</h2><p>Workflows advance one stage at a time. A visible stage creates a customer activity item and in-app notification.</p></div></div>
+        <form id="wf-advance-form" class="control-form"><label for="wf-run">Running workflow</label><select id="wf-run" required><option value="">No running workflows</option></select><div id="wf-run-summary" class="selected-summary">Choose a run to inspect its current and next stages.</div><label for="wf-next-step">Next stage</label><select id="wf-next-step" required><option value="">Select a run first</option></select><label for="wf-advance-note">Progress note</label><textarea id="wf-advance-note" rows="2" maxlength="2000" placeholder="What should the customer or case record know? (optional)"></textarea><button class="button button-primary" type="submit">Advance one stage</button></form>
+      </section>
+    </div>
+  </main></div>
+</body></html>

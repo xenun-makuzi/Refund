@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a171b">
+  <meta name="description" content="Refund administration control center.">
+  <title>Admin control center | Refund</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/admin-dashboard.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/admin-dashboard.js" defer></script>
+</head>
+<body class="admin-dashboard-page">
+  <a class="skip-link" href="#main-content">Skip to dashboard</a>
+  <header class="ad-topbar">
+    <a class="ad-brand" href="dashboard.html" aria-label="Refund admin dashboard"><span class="ad-brand-mark">R</span><span>refund<span class="ad-period">.</span><small>ADMIN CONTROL CENTER</small></span></a>
+    <div class="ad-top-context"><span class="ad-live-dot"></span> Operations overview</div>
+    <div class="ad-user-area"><div class="ad-user-copy"><strong id="admin-user-email">Checking access…</strong><span id="admin-user-role">Verifying permissions</span></div><button id="admin-sign-out" class="ad-signout" type="button">Sign out</button></div>
+  </header>
+
+  <div class="ad-shell">
+    <aside class="ad-sidebar" aria-label="Admin navigation">
+      <p class="ad-sidebar-label">CONTROL CENTER</p>
+      <a class="ad-nav-link is-active" href="dashboard.html" aria-current="page"><span>⌂</span> Overview</a>
+      <a class="ad-nav-link" href="claims.html"><span>▦</span> Claims & investigations <b id="nav-claims-count">—</b></a>
+      <a class="ad-nav-link" href="recovery.html"><span>◇</span> Recovery ledger & payouts <b id="nav-payout-count">—</b></a>
+      <a class="ad-nav-link" href="loans.html"><span>▤</span> Loans & withdrawals <b id="nav-loans-count">—</b></a>
+      <a class="ad-nav-link" href="identity-verification.html"><span>▣</span> Identity verification <b id="nav-identity-count">—</b></a>
+      <a class="ad-nav-link" href="messages.html"><span>✉</span> Customer messages</a>
+      <a class="ad-nav-link" href="notifications.html"><span>◉</span> Notifications <b id="nav-notifications-count">—</b></a>
+      <a class="ad-nav-link" href="support.html"><span>?</span> Support & complaints <b id="nav-support-count">—</b></a>
+      <div class="ad-nav-divider"></div>
+      <p class="ad-sidebar-label">QUALITY & CONTENT</p>
+      <a class="ad-nav-link" href="workflows.html"><span>⑂</span> Workflow builder</a>
+      <a class="ad-nav-link" href="risk-review.html"><span>⚑</span> Risk review <b id="nav-risk-count">—</b></a>
+      <a class="ad-nav-link" href="education.html"><span>▤</span> Education center</a>
+      <div class="ad-nav-divider"></div>
+      <a class="ad-nav-link" href="../customer/dashboard.html"><span>↗</span> Customer view</a>
+      <div class="ad-sidebar-note"><span class="ad-note-icon">✓</span><p><strong>Controlled access</strong><br>Only view sensitive customer information when required for your assigned duties.</p></div>
+    </aside>
+
+    <main id="main-content" class="ad-main">
+      <div id="admin-dashboard-message" class="ad-message" role="status" aria-live="polite" hidden></div>
+      <section class="ad-welcome-row">
+        <div><p class="ad-eyebrow"><span></span> OPERATIONS / OVERVIEW</p><h1>Good to see you.</h1><p class="ad-intro">A central view of claims, identity checks, recoveries, loans, and customer support.</p><p id="dashboard-date" class="ad-date"></p></div>
+        <button id="refresh-dashboard" class="ad-refresh-button" type="button"><span aria-hidden="true">↻</span> Refresh data</button>
+      </section>
+
+      <section class="ad-section" aria-labelledby="priority-heading">
+        <div class="ad-section-heading"><div><p class="ad-section-kicker">NEEDS ATTENTION</p><h2 id="priority-heading">Priority queues</h2></div><span class="ad-section-hint">Live counts from available modules</span></div>
+        <div class="ad-priority-grid">
+          <a class="ad-priority-card accent-teal" href="claims.html"><div class="ad-card-top"><span>Claims to review</span><span class="ad-icon">▦</span></div><strong data-metric="claimsPending">—</strong><small>Submitted or awaiting review</small><span class="ad-card-link">Open claims queue <b>↗</b></span></a>
+          <a class="ad-priority-card accent-amber" href="identity-verification.html"><div class="ad-card-top"><span>Identity checks</span><span class="ad-icon">▣</span></div><strong data-metric="identityPending">—</strong><small>Pending verification submissions</small><span class="ad-card-link">Review identities <b>↗</b></span></a>
+          <a class="ad-priority-card accent-blue" href="recovery.html"><div class="ad-card-top"><span>Payout requests</span><span class="ad-icon">◇</span></div><strong data-metric="payoutPending">—</strong><small>Waiting for an administrative decision</small><span class="ad-card-link">Review payouts <b>↗</b></span></a>
+          <a class="ad-priority-card accent-violet" href="loans.html"><div class="ad-card-top"><span>Loan applications</span><span class="ad-icon">▤</span></div><strong data-metric="loanPending">—</strong><small>Submitted or under review</small><span class="ad-card-link">Review applications <b>↗</b></span></a>
+          <a class="ad-priority-card accent-blue" href="loans.html"><div class="ad-card-top"><span>Loan withdrawals</span><span class="ad-icon">↗</span></div><strong data-metric="loanWithdrawalPending">—</strong><small>Withdrawal requests awaiting review</small><span class="ad-card-link">Review withdrawals <b>↗</b></span></a>
+          <a class="ad-priority-card accent-rose" href="support.html"><div class="ad-card-top"><span>Open support tickets</span><span class="ad-icon">?</span></div><strong data-metric="supportOpen">—</strong><small>Open, escalated, or in progress</small><span class="ad-card-link">Open support queue <b>↗</b></span></a>
+          <a class="ad-priority-card accent-orange" href="risk-review.html"><div class="ad-card-top"><span>Risk reviews</span><span class="ad-icon">⚑</span></div><strong data-metric="riskOpen">—</strong><small>Open or under review</small><span class="ad-card-link">Review flags <b>↗</b></span></a>
+        </div>
+      </section>
+
+      <section class="ad-section" aria-labelledby="modules-heading">
+        <div class="ad-section-heading"><div><p class="ad-section-kicker">ALL MODULES</p><h2 id="modules-heading">Workspace shortcuts</h2></div><span class="ad-section-hint">Open the relevant workspace</span></div>
+        <div class="ad-module-grid">
+          <a class="ad-module-card" href="claims.html"><span class="ad-module-icon teal">▦</span><div><h3>Claims & investigations</h3><p>Review cases, assign investigators, inspect evidence, and update customer-visible status.</p></div><span class="ad-module-arrow">↗</span></a>
+          <a class="ad-module-card" href="recovery.html"><span class="ad-module-icon green">◇</span><div><h3>Recovery ledger & payouts</h3><p>Set recovery targets, record verified installments, review payouts, and reconcile outcomes.</p></div><span class="ad-module-arrow">↗</span></a>
+          <a class="ad-module-card" href="loans.html"><span class="ad-module-icon violet">▤</span><div><h3>Loans & withdrawals</h3><p>Review applications, record approval decisions, and track requested loan disbursements.</p></div><span class="ad-module-arrow">↗</span></a>
+          <a class="ad-module-card" href="identity-verification.html"><span class="ad-module-icon amber">▣</span><div><h3>Identity verification</h3><p>Review submitted identity documents and request corrections where necessary.</p><small data-module-status="identity">Checking module…</small></div><span class="ad-module-arrow">↗</span></a>
+          <a class="ad-module-card" href="messages.html"><span class="ad-module-icon blue">✉</span><div><h3>Customer messages</h3><p>Respond to claim conversations while keeping internal notes private.</p></div><span class="ad-module-arrow">↗</span></a>
+          <a class="ad-module-card" href="notifications.html"><span class="ad-module-icon blue">◉</span><div><h3>Notifications</h3><p>Review in-app notices and follow up on changes that need attention.</p></div><span class="ad-module-arrow">↗</span></a>
+          <a class="ad-module-card" href="support.html"><span class="ad-module-icon rose">?</span><div><h3>Support & complaints</h3><p>Assign tickets, reply to customers, escalate issues, and record resolutions.</p></div><span class="ad-module-arrow">↗</span></a>
+          <a class="ad-module-card" href="workflows.html"><span class="ad-module-icon slate">⑂</span><div><h3>Workflow builder</h3><p>Configure claim stages, required evidence, and customer-visible progress.</p></div><span class="ad-module-arrow">↗</span></a>
+          <a class="ad-module-card" href="risk-review.html"><span class="ad-module-icon orange">⚑</span><div><h3>Risk review</h3><p>Manage manual review flags, assign reviewers, and record resolution decisions.</p></div><span class="ad-module-arrow">↗</span></a>
+          <a class="ad-module-card" href="education.html"><span class="ad-module-icon green">▤</span><div><h3>Education center</h3><p>Manage fraud-awareness articles, draft content, and publish public resources.</p><small data-module-status="education">Checking module…</small></div><span class="ad-module-arrow">↗</span></a>
+        </div>
+      </section>
+
+      <section class="ad-bottom-grid">
+        <div class="ad-panel">
+          <div class="ad-panel-heading"><div><p class="ad-section-kicker">LATEST INTAKE</p><h2>Recently submitted claims</h2></div><a href="claims.html" class="ad-text-link">View all ↗</a></div>
+          <div id="recent-claims" class="ad-recent-list"><div class="ad-empty-state">Loading recent claims…</div></div>
+        </div>
+        <div class="ad-panel">
+          <div class="ad-panel-heading"><div><p class="ad-section-kicker">SYSTEM READINESS</p><h2>Module checks</h2></div></div>
+          <div id="module-checks" class="ad-check-list"><div class="ad-empty-state">Checking configured modules…</div></div>
+          <p class="ad-panel-footnote">A module count unavailable here may mean its migration has not been installed yet, or an access policy needs review. Check the specific module before relying on its count.</p>
+        </div>
+      </section>
+
+      <footer class="ad-footer"><span>Refund Admin Control Center</span><span>Protect customer data · Record decisions · Verify financial outcomes</span></footer>
+    </main>
+  </div>
+</body>
+</html>

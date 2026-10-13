@@ -1,0 +1,6 @@
+Optional links to add inside your existing admin sidebar:
+
+<a href="workflows.html">Workflow builder</a>
+<a href="risk-review.html">Risk review</a>
+
+Do not replace existing working admin files only to add these links. Paste these anchors into the existing sidebar.

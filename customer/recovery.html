@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071a1c">
+  <meta name="description" content="Review verified recovery balances and submit eligible payout requests.">
+  <title>Recovery &amp; payouts | Refund</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/recovery.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/customer-recovery.js" defer></script>
+</head>
+<body class="customer-recovery-page">
+  <a class="sr-skip" href="#main-content">Skip to recovery balances</a>
+  <header class="cr-header">
+    <a class="cr-brand" href="../index.html" aria-label="Refund home">
+      <span class="cr-brand-mark" aria-hidden="true">R</span>
+      <span>refund<span class="cr-brand-period">.</span><small>CUSTOMER PORTAL</small></span>
+    </a>
+    <nav class="cr-nav" aria-label="Customer navigation">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="claims.html">My claims</a>
+      <a href="recovery.html" class="is-current" aria-current="page">Recovery &amp; payouts</a>
+      <a href="loans.html">Loans</a>
+      <a href="messages.html">Messages</a>
+      <a href="support.html">Help &amp; complaints</a>
+      <a href="notifications.html">Notifications</a>
+    </nav>
+    <div class="cr-account-bar">
+      <span class="cr-online-dot" aria-hidden="true"></span>
+      <span id="recovery-user-email">Checking session…</span>
+      <button id="recovery-sign-out" class="cr-signout" type="button">Sign out</button>
+    </div>
+  </header>
+
+  <main id="main-content" class="cr-main">
+    <section class="cr-intro">
+      <div class="cr-intro-copy">
+        <p class="cr-eyebrow"><span></span> RECOVERY OVERVIEW</p>
+        <h1>Know where your recovery stands.</h1>
+        <p class="cr-intro-lead">Follow verified recovery installments, see what's still outstanding, and review any payout requests associated with your cases.</p>
+      </div>
+      <div class="cr-intro-art" aria-hidden="true">
+        <div class="cr-art-orbit cr-art-orbit-one"></div>
+        <div class="cr-art-orbit cr-art-orbit-two"></div>
+        <div class="cr-art-core"><span>R</span><i>RECOVERY</i></div>
+        <span class="cr-art-spark cr-art-spark-one"></span><span class="cr-art-spark cr-art-spark-two"></span>
+      </div>
+    </section>
+
+    <div id="recovery-global-message" class="cr-message" role="status" aria-live="polite" hidden></div>
+
+    <section class="cr-verification-strip" aria-label="Identity verification status">
+      <div class="cr-verification-icon" aria-hidden="true">✓</div>
+      <div class="cr-verification-copy">
+        <strong id="identity-title">Checking identity status</strong>
+        <p id="identity-description">Payout requests require verified identity and an active account.</p>
+      </div>
+      <span id="identity-pill" class="cr-identity-pill">Checking</span>
+    </section>
+
+    <section aria-labelledby="summary-title" class="cr-section">
+      <div class="cr-section-heading">
+        <div><p class="cr-section-kicker">YOUR FUNDS, CLEARLY SHOWN</p><h2 id="summary-title">Recovery summary</h2></div>
+        <button id="recovery-refresh" class="cr-button cr-button-outline" type="button"><span aria-hidden="true">↻</span> Refresh</button>
+      </div>
+      <div id="recovery-summary-grid" class="cr-summary-grid" aria-live="polite">
+        <article class="cr-summary-card cr-summary-loading"><span class="cr-skeleton"></span><span class="cr-skeleton cr-skeleton-short"></span><span class="cr-skeleton cr-skeleton-long"></span></article>
+        <article class="cr-summary-card cr-summary-loading"><span class="cr-skeleton"></span><span class="cr-skeleton cr-skeleton-short"></span><span class="cr-skeleton cr-skeleton-long"></span></article>
+        <article class="cr-summary-card cr-summary-loading"><span class="cr-skeleton"></span><span class="cr-skeleton cr-skeleton-short"></span><span class="cr-skeleton cr-skeleton-long"></span></article>
+      </div>
+      <p class="cr-fine-print">Amounts shown come from verified ledger entries and the recovery targets configured for your cases. Different currencies are displayed separately and are not combined.</p>
+    </section>
+
+    <section aria-labelledby="cases-title" class="cr-section cr-case-section">
+      <div class="cr-section-heading">
+        <div><p class="cr-section-kicker">CASE-BY-CASE DETAIL</p><h2 id="cases-title">Your recovery cases</h2><p class="cr-section-subtitle">Payout becomes available only after the full approved recovery target is reached and required checks are complete.</p></div>
+        <span id="recovery-case-count" class="cr-count-pill">Loading…</span>
+      </div>
+      <div id="recovery-cases-list" class="cr-cases-list" aria-live="polite">
+        <div class="cr-empty-loading">Loading your recovery records…</div>
+      </div>
+    </section>
+
+    <section aria-labelledby="payouts-title" class="cr-section cr-payout-section">
+      <div class="cr-section-heading">
+        <div><p class="cr-section-kicker">REQUEST HISTORY</p><h2 id="payouts-title">Payout requests</h2><p class="cr-section-subtitle">A request is not a completed transfer. We show a payout as paid only after the payment is confirmed and recorded.</p></div>
+      </div>
+      <div id="payout-history-list" class="cr-payout-list" aria-live="polite">
+        <div class="cr-empty-loading">Loading payout requests…</div>
+      </div>
+    </section>
+
+    <footer class="cr-footer"><span>© <span id="current-year"></span> Refund</span><span>For your security, payout destination details are not shown on this page.</span><a href="claims.html">Back to my claims</a></footer>
+  </main>
+
+  <dialog id="payout-dialog" class="cr-dialog" aria-labelledby="payout-dialog-title">
+    <form id="payout-form" class="cr-dialog-card" novalidate>
+      <div class="cr-dialog-heading">
+        <div><p class="cr-section-kicker">PAYOUT REQUEST</p><h2 id="payout-dialog-title">Request your recovered funds</h2><p id="payout-dialog-subtitle">Your request will be reviewed by the Refund team.</p></div>
+        <button id="payout-close-x" class="cr-icon-close" type="button" aria-label="Close payout form">×</button>
+      </div>
+      <div id="payout-form-message" class="cr-message" role="status" aria-live="polite" hidden></div>
+      <div class="cr-payout-amount-box"><span>Amount requested</span><strong id="payout-request-amount">—</strong><small>The system requests the full verified amount for this recovery account.</small></div>
+      <input id="payout-recovery-account-id" type="hidden">
+      <div class="cr-field">
+        <label for="payout-method">Payout method</label>
+        <select id="payout-method" name="method" required>
+          <option value="bank_transfer">Bank transfer</option>
+          <option value="crypto">Cryptocurrency</option>
+          <option value="other">Other supported method</option>
+        </select>
+      </div>
+
+      <div id="bank-fields" class="cr-destination-fields">
+        <div class="cr-form-row">
+          <div class="cr-field"><label for="bank-name">Bank name</label><input id="bank-name" maxlength="160" autocomplete="organization" placeholder="Bank or institution"></div>
+          <div class="cr-field"><label for="bank-account-holder">Account holder</label><input id="bank-account-holder" maxlength="160" autocomplete="name" placeholder="Name on account"></div>
+        </div>
+        <div class="cr-form-row">
+          <div class="cr-field"><label for="bank-account-number">Account number</label><input id="bank-account-number" maxlength="80" autocomplete="off" placeholder="Account number"></div>
+          <div class="cr-field"><label for="bank-iban">IBAN <span>if applicable</span></label><input id="bank-iban" maxlength="80" autocomplete="off" placeholder="IBAN"></div>
+        </div>
+        <div class="cr-form-row">
+          <div class="cr-field"><label for="bank-country">Country <span>optional</span></label><input id="bank-country" maxlength="100" autocomplete="country-name" placeholder="Country"></div>
+          <div class="cr-field"><label for="bank-routing">Routing / SWIFT <span>optional</span></label><input id="bank-routing" maxlength="100" autocomplete="off" placeholder="Routing or SWIFT code"></div>
+        </div>
+      </div>
+
+      <div id="crypto-fields" class="cr-destination-fields" hidden>
+        <div class="cr-form-row">
+          <div class="cr-field"><label for="crypto-asset">Asset</label><input id="crypto-asset" maxlength="40" placeholder="e.g. USDC"></div>
+          <div class="cr-field"><label for="crypto-network">Network</label><input id="crypto-network" maxlength="80" placeholder="Exact network"></div>
+        </div>
+        <div class="cr-field"><label for="crypto-address">Wallet address</label><textarea id="crypto-address" rows="3" maxlength="300" spellcheck="false" placeholder="Paste the destination wallet address"></textarea><small>Confirm the asset and network carefully before submitting.</small></div>
+      </div>
+
+      <div id="other-fields" class="cr-destination-fields" hidden>
+        <div class="cr-field"><label for="other-provider">Provider</label><input id="other-provider" maxlength="100" placeholder="Provider or service name"></div>
+        <div class="cr-field"><label for="other-destination">Destination details</label><textarea id="other-destination" rows="3" maxlength="500" placeholder="Required destination details"></textarea></div>
+      </div>
+
+      <div class="cr-security-note"><span aria-hidden="true">⌑</span><p>Your payout destination details will be stored with the request and visible to authorized staff who process payouts. Submit only a destination you control.</p></div>
+      <div class="cr-dialog-actions"><button id="payout-cancel" class="cr-button cr-button-outline" type="button">Cancel</button><button id="payout-submit" class="cr-button cr-button-primary" type="submit">Submit payout request</button></div>
+    </form>
+  </dialog>
+</body>
+</html>

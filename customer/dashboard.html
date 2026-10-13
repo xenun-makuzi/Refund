@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1b20">
+  <meta name="description" content="Your Refund account overview, recovery progress, claims, loan requests and updates.">
+  <title>My overview | Refund</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/customer-dashboard.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/dashboard.js" defer></script>
+</head>
+<body class="refund-dashboard">
+  <a class="skip-link" href="#dashboard-main">Skip to dashboard content</a>
+  <div class="dashboard-shell">
+    <aside class="sidebar" id="dashboard-sidebar" aria-label="Main navigation">
+      <a class="side-brand" href="../index.html" aria-label="Refund home">
+        <span class="side-brand-mark">r.</span><span class="side-brand-word">refund<span>.</span></span>
+      </a>
+      <div class="side-section-label">WORKSPACE</div>
+      <nav class="side-nav">
+        <a class="side-nav-link is-active" href="dashboard.html"><span class="nav-icon" aria-hidden="true">▦</span><span>Overview</span></a>
+        <a class="side-nav-link" href="claims.html"><span class="nav-icon" aria-hidden="true">▤</span><span>My claims</span></a>
+        <a class="side-nav-link" href="verification.html"><span class="nav-icon" aria-hidden="true">⌑</span><span>Identity verification</span></a>
+        <a class="side-nav-link" href="recovery.html"><span class="nav-icon" aria-hidden="true">↗</span><span>Recovery &amp; payouts</span></a>
+        <a class="side-nav-link" href="loans.html"><span class="nav-icon" aria-hidden="true">◇</span><span>Loans</span></a>
+        <a class="side-nav-link" href="messages.html"><span class="nav-icon" aria-hidden="true">✉</span><span>Messages</span><span class="nav-count" id="nav-unread-messages" hidden>0</span></a>
+        <a class="side-nav-link" href="notifications.html"><span class="nav-icon" aria-hidden="true">♢</span><span>Notifications</span><span class="nav-count" id="nav-unread-notifications" hidden>0</span></a>
+      </nav>
+      <div class="side-section-label side-section-spaced">HELP &amp; INFORMATION</div>
+      <nav class="side-nav">
+        <a class="side-nav-link" href="support.html"><span class="nav-icon" aria-hidden="true">?</span><span>Help &amp; complaints</span></a>
+        <a class="side-nav-link" href="../education.html"><span class="nav-icon" aria-hidden="true">▣</span><span>Fraud awareness</span></a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="sidebar-help-icon" aria-hidden="true">✓</div>
+        <strong>Need a hand?</strong>
+        <p>Get help with a claim, your account, or a recent update.</p>
+        <a href="support.html">Visit support <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="sidebar-footer">REFUND CUSTOMER PORTAL <span>•</span> Secure account access</div>
+    </aside>
+
+    <div class="dashboard-main-column">
+      <header class="topbar">
+        <button class="mobile-menu-button" id="mobile-menu-button" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+        <div class="breadcrumbs"><span>Workspace</span><span class="crumb-separator">/</span><strong>Overview</strong></div>
+        <div class="topbar-actions">
+          <span class="topbar-date" id="dashboard-date">Your account overview</span>
+          <a class="topbar-icon-button" href="notifications.html" aria-label="Notifications"><span aria-hidden="true">♢</span><i id="topbar-notification-dot" hidden></i></a>
+          <div class="topbar-avatar" id="customer-avatar" aria-hidden="true">R</div>
+          <div class="topbar-user-copy"><strong id="topbar-user-name">Your account</strong><span id="topbar-user-email">Loading session…</span></div>
+          <button class="sign-out-button" id="sign-out-button" type="button">Sign out</button>
+        </div>
+      </header>
+
+      <main class="main-content" id="dashboard-main">
+        <section class="welcome-row" aria-labelledby="welcome-title">
+          <div>
+            <div class="eyebrow"><span class="eyebrow-dot"></span> YOUR REFUND WORKSPACE</div>
+            <h1 id="welcome-title">Welcome back<span id="welcome-name-punctuation">.</span> <span class="welcome-name" id="customer-first-name"></span></h1>
+            <p class="welcome-subtitle">Your recovery progress, active requests, and latest updates — together in one place.</p>
+          </div>
+          <div class="welcome-actions">
+            <button class="button-quiet" id="dashboard-refresh" type="button"><span aria-hidden="true">↻</span> Refresh</button>
+            <a class="button-primary" href="claims.html">Start a claim <span aria-hidden="true">↗</span></a>
+          </div>
+        </section>
+
+        <div id="dashboard-global-message" class="dashboard-alert" role="status" aria-live="polite" hidden></div>
+        <section id="dashboard-loading" class="loading-panel" aria-live="polite">
+          <span class="loading-spinner" aria-hidden="true"></span><span>Loading your verified account information…</span>
+        </section>
+
+        <section class="identity-strip" id="identity-strip" aria-live="polite">
+          <span class="identity-symbol" id="identity-symbol" aria-hidden="true">✓</span>
+          <div class="identity-copy"><strong id="identity-title">Checking account status</strong><p id="identity-description">Your account information is loading.</p></div>
+          <span class="identity-badge" id="identity-badge">Checking</span>
+        </section>
+
+        <section class="verification-dashboard-card" id="identity-dashboard-card" aria-labelledby="identity-dashboard-title">
+          <div class="verification-dashboard-icon" aria-hidden="true">⌑</div>
+          <div class="verification-dashboard-copy">
+            <div class="section-overline">ACCOUNT SECURITY</div>
+            <h2 id="identity-dashboard-title">Identity verification</h2>
+            <p id="identity-dashboard-description">Check your verification status or submit an identity document securely.</p>
+            <span class="verification-dashboard-footnote">Private document upload · Human review · In-app status updates</span>
+          </div>
+          <div class="verification-dashboard-action">
+            <span id="identity-dashboard-status" class="verification-dashboard-status">Checking…</span>
+            <a id="identity-dashboard-link" class="button-primary" href="verification.html">Open verification <span aria-hidden="true">↗</span></a>
+          </div>
+        </section>
+
+        <section class="metric-grid" aria-label="Account summary">
+          <article class="metric-card metric-card-dark">
+            <div class="metric-top"><span>Active claims</span><span class="metric-icon" aria-hidden="true">▤</span></div>
+            <div class="metric-value" id="metric-active-claims">—</div>
+            <div class="metric-foot"><span class="metric-dot"></span><span>Cases still in progress</span></div>
+          </article>
+          <article class="metric-card">
+            <div class="metric-top"><span>Recovery cases</span><span class="metric-icon metric-icon-green" aria-hidden="true">↗</span></div>
+            <div class="metric-value" id="metric-recovery-cases">—</div>
+            <div class="metric-foot"><span id="metric-recovery-foot">Based on configured recovery targets</span></div>
+          </article>
+          <article class="metric-card">
+            <div class="metric-top"><span>Approved loans</span><span class="metric-icon metric-icon-blue" aria-hidden="true">◇</span></div>
+            <div class="metric-value" id="metric-approved-loans">—</div>
+            <div class="metric-foot"><span>Approval is separate from funding</span></div>
+          </article>
+          <article class="metric-card">
+            <div class="metric-top"><span>Unread updates</span><span class="metric-icon metric-icon-purple" aria-hidden="true">✦</span></div>
+            <div class="metric-value" id="metric-unread-updates">—</div>
+            <div class="metric-foot"><a href="notifications.html">View notifications <span aria-hidden="true">→</span></a></div>
+          </article>
+        </section>
+
+        <section class="content-section recovery-section" aria-labelledby="recovery-title">
+          <div class="section-heading">
+            <div><div class="section-overline">RECOVERY OVERVIEW</div><h2 id="recovery-title">Your recovery progress</h2><p>Only administrator-configured targets and verified ledger entries are shown here.</p></div>
+            <a class="text-link" href="recovery.html">View recovery details <span aria-hidden="true">→</span></a>
+          </div>
+          <div class="recovery-summary-grid" id="recovery-summary-grid">
+            <div class="empty-panel empty-panel-compact"><span class="empty-symbol">↗</span><strong>Loading recovery data</strong><p>We'll show balances once your account records are available.</p></div>
+          </div>
+        </section>
+
+        <div class="main-content-grid">
+          <section class="panel" aria-labelledby="claims-title">
+            <div class="panel-heading"><div><div class="section-overline">CASE MANAGEMENT</div><h2 id="claims-title">Recent claims</h2></div><a class="text-link" href="claims.html">All claims <span aria-hidden="true">→</span></a></div>
+            <div id="recent-claims-list" class="recent-claims-list"><div class="skeleton-row"></div><div class="skeleton-row"></div></div>
+          </section>
+          <section class="panel updates-panel" aria-labelledby="updates-title">
+            <div class="panel-heading"><div><div class="section-overline">STAY INFORMED</div><h2 id="updates-title">Recent updates</h2></div><a class="text-link" href="notifications.html">View all <span aria-hidden="true">→</span></a></div>
+            <div id="recent-updates-list" class="recent-updates-list"><div class="skeleton-row"></div><div class="skeleton-row"></div></div>
+          </section>
+        </div>
+
+        <div class="main-content-grid financial-requests-grid">
+          <section class="panel" aria-labelledby="loans-snapshot-title">
+            <div class="panel-heading"><div><div class="section-overline">LOAN WORKSPACE</div><h2 id="loans-snapshot-title">Recent loan requests</h2></div><a class="text-link" href="loans.html">View loans <span aria-hidden="true">→</span></a></div>
+            <div id="recent-loans-list" class="recent-updates-list"><div class="skeleton-row"></div><div class="skeleton-row"></div></div>
+          </section>
+          <section class="panel" aria-labelledby="payouts-snapshot-title">
+            <div class="panel-heading"><div><div class="section-overline">PAYOUT CENTER</div><h2 id="payouts-snapshot-title">Recent payout requests</h2></div><a class="text-link" href="recovery.html">View payouts <span aria-hidden="true">→</span></a></div>
+            <div id="recent-payouts-list" class="recent-updates-list"><div class="skeleton-row"></div><div class="skeleton-row"></div></div>
+          </section>
+        </div>
+
+        <section class="content-section tools-section" aria-labelledby="tools-title">
+          <div class="section-heading"><div><div class="section-overline">YOUR TOOLS</div><h2 id="tools-title">Everything you need, close by</h2><p>Open a workspace to take your next step.</p></div></div>
+          <div class="tool-grid">
+            <a class="tool-card" href="claims.html"><span class="tool-icon tool-icon-green" aria-hidden="true">▤</span><span class="tool-copy"><strong>Claims &amp; investigations</strong><small>Submit a claim and follow its progress.</small><span class="tool-arrow">Open workspace ↗</span></span></a>
+            <a class="tool-card" href="recovery.html"><span class="tool-icon tool-icon-amber" aria-hidden="true">↗</span><span class="tool-copy"><strong>Recovery &amp; payouts</strong><small>See verified installments and payout status.</small><span class="tool-arrow">View recovery ↗</span></span></a>
+            <a class="tool-card" href="loans.html"><span class="tool-icon tool-icon-blue" aria-hidden="true">◇</span><span class="tool-copy"><strong>Loans &amp; withdrawals</strong><small>Track loan decisions and withdrawal requests.</small><span class="tool-arrow">View loans ↗</span></span></a>
+            <a class="tool-card" href="messages.html"><span class="tool-icon tool-icon-purple" aria-hidden="true">✉</span><span class="tool-copy"><strong>Messages</strong><small>Talk to the team about a claim.</small><span class="tool-arrow">Open messages ↗</span></span></a>
+            <a class="tool-card" href="support.html"><span class="tool-icon tool-icon-rose" aria-hidden="true">?</span><span class="tool-copy"><strong>Help &amp; complaints</strong><small>Get assistance or raise a concern.</small><span class="tool-arrow">Visit support ↗</span></span></a>
+            <a class="tool-card" href="../education.html"><span class="tool-icon tool-icon-slate" aria-hidden="true">▣</span><span class="tool-copy"><strong>Fraud awareness</strong><small>Explore practical safety resources.</small><span class="tool-arrow">Explore guides ↗</span></span></a>
+          </div>
+        </section>
+
+        <footer class="dashboard-footer"><span>© <span id="current-year"></span> Refund</span><span>Recovery is subject to case review; no outcome is guaranteed.</span><a href="../privacy.html">Privacy information</a></footer>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07151a">
+  <meta name="description" content="Create your Refund account to manage recovery requests and case updates.">
+  <title>Create your account | Refund</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/auth.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/register.js" defer></script>
+</head>
+<body class="auth-page register-page">
+  <a class="skip-link" href="#main">Skip to registration</a>
+  <header class="auth-header">
+    <a class="brand" href="index.html" aria-label="Refund home">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 36 36" fill="none"><path d="M9 25.8V10.2h9.2c4 0 6.4 2.1 6.4 5.4 0 2.4-1.4 4.1-3.6 4.9l4.3 5.3h-5.4l-3.7-4.7h-2.7v4.7H9Zm4.5-8.5h4.3c1.4 0 2.2-.6 2.2-1.7 0-1-.8-1.7-2.2-1.7h-4.3v3.4Z" fill="currentColor"/><path d="M27.8 8.2v4.1" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span>
+      <span class="brand-name">refund<span>.</span></span>
+    </a>
+    <a class="back-home" href="index.html"><span aria-hidden="true">←</span> Back to home</a>
+  </header>
+
+  <main id="main" class="auth-layout register-layout">
+    <section class="auth-story register-story" aria-labelledby="register-story-heading">
+      <div class="story-glow story-glow-one" aria-hidden="true"></div>
+      <div class="story-glow story-glow-two" aria-hidden="true"></div>
+      <div class="story-content">
+        <div class="eyebrow"><span class="eyebrow-dot"></span> A CLEARER WAY TO FOLLOW YOUR REQUEST</div>
+        <h1 id="register-story-heading">Start with the details. <span>Stay informed.</span></h1>
+        <p class="story-lead">Create an account to keep your requests and future case updates in one place.</p>
+        <div class="story-card register-benefits-card">
+          <div class="story-card-top"><span class="story-card-icon" aria-hidden="true">✦</span><span class="story-card-label">YOUR REFUND ACCOUNT</span></div>
+          <h2>One account, two ways to get started.</h2>
+          <p>Submit a general claim yourself, or tell us which company referred you so we can route you to the appropriate process.</p>
+          <div class="story-divider"></div>
+          <div class="story-check"><span aria-hidden="true">✓</span><div><strong>Keep track of progress</strong><small>View recorded status updates and requests for information.</small></div></div>
+          <div class="story-check"><span aria-hidden="true">✓</span><div><strong>Know what happens next</strong><small>Follow the next steps communicated for your request.</small></div></div>
+        </div>
+        <p class="story-disclaimer">Creating an account does not guarantee that a claim will be accepted or that money will be recovered.</p>
+      </div>
+      <div class="story-decoration" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    </section>
+
+    <section class="auth-panel register-panel" aria-labelledby="register-heading">
+      <div class="auth-form-wrap register-form-wrap">
+        <div class="mobile-brand-lockup"><span class="mobile-brand-mark">r.</span><span>refund<span>.</span></span></div>
+        <div class="form-kicker">CREATE YOUR ACCOUNT</div>
+        <h2 id="register-heading">Let's get you started.</h2>
+        <p class="form-intro">Enter your details, then choose how you were directed to Refund.</p>
+
+        <div id="register-message" class="form-message" role="status" aria-live="polite" hidden></div>
+
+        <form id="register-form" class="auth-form register-form" novalidate>
+          <label for="full-name">Full legal name</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.4-3.4 2.8-5.3 7-5.3s6.6 1.9 7 5.3"/></svg>
+            <input id="full-name" name="fullName" type="text" autocomplete="name" placeholder="Enter your full name" required minlength="2" maxlength="120">
+          </div>
+
+          <label for="register-email">Email address</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="2.5"/><path d="m5 7 7 5.5L19 7"/></svg>
+            <input id="register-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required maxlength="254">
+          </div>
+
+          <label for="register-password">Password</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="10" width="15" height="10" rx="2"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10"/></svg>
+            <input id="register-password" name="password" type="password" autocomplete="new-password" placeholder="At least 10 characters" required minlength="10" maxlength="128" aria-describedby="password-hint">
+            <button id="toggle-register-password" class="password-toggle" type="button" aria-label="Show password" aria-pressed="false">Show</button>
+          </div>
+          <p id="password-hint" class="register-field-hint">Use at least 10 characters. Avoid a password you use elsewhere.</p>
+
+          <label for="confirm-password">Confirm password</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="10" width="15" height="10" rx="2"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10"/></svg>
+            <input id="confirm-password" name="confirmPassword" type="password" autocomplete="new-password" placeholder="Enter the password again" required minlength="10" maxlength="128">
+          </div>
+
+          <fieldset class="source-fieldset">
+            <legend>How are you accessing Refund?</legend>
+            <p class="register-field-hint source-help">Choose the option that matches your situation.</p>
+            <div class="source-choice-grid">
+              <label class="source-choice" for="source-direct">
+                <input id="source-direct" name="onboarding-source" type="radio" value="direct" checked>
+                <span class="source-choice-copy"><strong>I'm submitting a claim</strong><small>I came to Refund directly and need the general claim process.</small></span>
+              </label>
+              <label class="source-choice" for="source-partner">
+                <input id="source-partner" name="onboarding-source" type="radio" value="partner_referral">
+                <span class="source-choice-copy"><strong>A company referred me</strong><small>An organization directed me here for its refund process.</small></span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div id="partner-fields" class="partner-fields" hidden>
+            <label for="partner-name">Company or organization name</label>
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M8 8h2m4 0h2M8 12h2m4 0h2M10 20v-4h4v4"/></svg>
+              <input id="partner-name" name="partnerName" type="text" maxlength="160" placeholder="Name of the company that referred you" autocomplete="organization" disabled>
+            </div>
+            <label for="partner-code">Referral code <span class="optional-label">if provided</span></label>
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13 13 20 3.5 10.5V4h6.5L20 13Z"/><circle cx="7.5" cy="7.5" r="1"/></svg>
+              <input id="partner-code" name="partnerCode" type="text" maxlength="80" placeholder="Enter your referral code" autocomplete="off" disabled>
+            </div>
+            <p class="register-field-hint">Referral details will be checked before the company-specific process is confirmed.</p>
+          </div>
+
+          <label class="terms-check" for="accept-terms">
+            <input id="accept-terms" name="acceptTerms" type="checkbox" required>
+            <span>I understand the linked <a href="terms.html" target="_blank" rel="noopener">Terms</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a> are drafts and must be finalized before public launch.</span>
+          </label>
+
+          <button id="register-submit" class="auth-submit" type="submit"><span class="button-label">Create account</span><span class="button-arrow" aria-hidden="true">↗</span><span class="button-spinner" aria-hidden="true"></span></button>
+          <p class="form-footnote"><span class="small-shield" aria-hidden="true">✓</span> Your password is handled by Supabase Authentication. Never share it with anyone.</p>
+        </form>
+
+        <div class="auth-separator"><span>ALREADY REGISTERED?</span></div>
+        <a class="create-account-link" href="login.html">Sign in to your account <span aria-hidden="true">→</span></a>
+        <p class="auth-legal">Identity-document upload is not enabled in this registration step. We will add it after private storage and access policies are configured.</p>
+      </div>
+      <footer class="auth-panel-footer"><span>© <span id="current-year"></span> Refund</span><a href="index.html">Help &amp; information</a></footer>
+    </section>
+  </main>
+</body>
+</html>

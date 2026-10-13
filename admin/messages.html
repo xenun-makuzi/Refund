@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#08171b">
+  <meta name="description" content="Authorized Refund staff messaging workspace.">
+  <title>Messages | Refund Operations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/communications.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/claim-messages.js" defer></script>
+</head>
+<body class="communications-page staff-workspace" data-workspace="staff">
+  <header class="comms-header">
+    <a class="comms-brand" href="../index.html"><span class="comms-brand-mark">R</span><span>refund<span class="brand-period">.</span><small>OPERATIONS</small></span></a>
+    <nav class="comms-nav" aria-label="Operations navigation">
+      <a href="claims.html">Claims queue</a><a href="recovery.html">Recovery ledger</a><a href="loans.html">Loans</a><a href="notifications.html">Notifications</a><a href="support.html">Support &amp; complaints</a>
+    </nav>
+    <div class="comms-account"><span id="comms-user-email">Checking session…</span><button id="comms-sign-out" type="button" class="comms-quiet-button">Sign out</button></div>
+  </header>
+  <main class="comms-main">
+    <div class="comms-heading"><div><p class="comms-eyebrow">OPERATIONS / COMMUNICATIONS</p><h1>Customer messages</h1><p>Respond to claim conversations. Keep confidential investigation notes in the internal case activity instead.</p></div><a class="comms-outline-button" href="notifications.html">View notifications <span id="comms-unread-count" class="comms-count">…</span></a></div>
+    <div id="comms-global-message" class="comms-alert" role="status" aria-live="polite" hidden></div>
+    <section class="chat-layout" aria-label="Customer conversations">
+      <aside class="conversation-rail"><div class="rail-heading"><div><span class="comms-section-kicker">ACCESSIBLE CASES</span><h2>Conversations</h2></div><span id="conversation-count" class="comms-count">—</span></div><div id="conversation-list" class="conversation-list"><p class="comms-muted">Loading accessible claims…</p></div></aside>
+      <section class="chat-panel" aria-label="Selected conversation">
+        <div id="conversation-empty" class="chat-empty"><span class="chat-empty-icon">✦</span><h2>Select a case</h2><p>Choose an accessible claim to review its customer conversation.</p></div>
+        <div id="conversation-active" class="conversation-active" hidden>
+          <div class="chat-topline"><div><span class="comms-section-kicker">CASE CONVERSATION</span><h2 id="active-claim-title">—</h2><p id="active-claim-meta">—</p></div><span id="active-claim-status" class="status-chip">—</span></div>
+          <div id="chat-message-list" class="chat-message-list" aria-live="polite"><p class="comms-muted">Loading messages…</p></div>
+          <form id="chat-send-form" class="chat-compose"><label class="visually-hidden" for="chat-message-input">Message to customer</label><textarea id="chat-message-input" maxlength="5000" rows="3" placeholder="Write a customer-visible reply…" required></textarea><div class="compose-footer"><span>For internal-only information, use the case activity notes.</span><button id="chat-send-button" class="comms-primary-button" type="submit">Send reply <span aria-hidden="true">↗</span></button></div></form>
+        </div>
+      </section>
+    </section>
+    <p class="comms-footnote">Access is enforced by Supabase policies and the server-side send-message function. Frontend controls are not the security boundary.</p>
+  </main>
+</body>
+</html>

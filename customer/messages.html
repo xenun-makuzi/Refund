@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07151a">
+  <meta name="description" content="Secure messages about your Refund cases.">
+  <title>Messages | Refund</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/communications.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/claim-messages.js" defer></script>
+</head>
+<body class="communications-page" data-workspace="customer">
+  <header class="comms-header">
+    <a class="comms-brand" href="../index.html"><span class="comms-brand-mark">R</span><span>refund<span class="brand-period">.</span><small>CUSTOMER PORTAL</small></span></a>
+    <nav class="comms-nav" aria-label="Customer navigation">
+      <a href="dashboard.html">Dashboard</a><a href="claims.html">My claims</a><a href="recovery.html">Recovery &amp; payouts</a><a href="loans.html">Loans</a><a href="notifications.html">Notifications</a><a href="support.html">Help &amp; complaints</a>
+    </nav>
+    <div class="comms-account"><span id="comms-user-email">Checking session…</span><button id="comms-sign-out" type="button" class="comms-quiet-button">Sign out</button></div>
+  </header>
+  <main class="comms-main">
+    <div class="comms-heading"><div><p class="comms-eyebrow">CUSTOMER WORKSPACE</p><h1>Messages</h1><p>Use this secure conversation to communicate with the team about your claim. Private staff notes are not shown here.</p></div><a class="comms-outline-button" href="notifications.html">View notifications <span id="comms-unread-count" class="comms-count">…</span></a></div>
+    <div id="comms-global-message" class="comms-alert" role="status" aria-live="polite" hidden></div>
+    <section class="chat-layout" aria-label="Claim conversations">
+      <aside class="conversation-rail"><div class="rail-heading"><div><span class="comms-section-kicker">YOUR CASES</span><h2>Conversations</h2></div><span id="conversation-count" class="comms-count">—</span></div><div id="conversation-list" class="conversation-list"><p class="comms-muted">Loading your claims…</p></div></aside>
+      <section class="chat-panel" aria-label="Selected conversation">
+        <div id="conversation-empty" class="chat-empty"><span class="chat-empty-icon">✦</span><h2>Select a case</h2><p>Choose one of your claims to view messages and send a reply.</p></div>
+        <div id="conversation-active" class="conversation-active" hidden>
+          <div class="chat-topline"><div><span class="comms-section-kicker">CASE CONVERSATION</span><h2 id="active-claim-title">—</h2><p id="active-claim-meta">—</p></div><span id="active-claim-status" class="status-chip">—</span></div>
+          <div id="chat-message-list" class="chat-message-list" aria-live="polite"><p class="comms-muted">Loading messages…</p></div>
+          <form id="chat-send-form" class="chat-compose"><label class="visually-hidden" for="chat-message-input">Your message</label><textarea id="chat-message-input" maxlength="5000" rows="3" placeholder="Write a message to the Refund team…" required></textarea><div class="compose-footer"><span>Do not send passwords, full card numbers, or account credentials.</span><button id="chat-send-button" class="comms-primary-button" type="submit">Send message <span aria-hidden="true">↗</span></button></div></form>
+        </div>
+      </section>
+    </section>
+    <p class="comms-footnote">Messages are visible to the claim owner and authorized staff who administer or support the case. Internal investigation notes remain separate.</p>
+  </main>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07151a">
+  <meta name="description" content="Submit and track your Refund claims securely.">
+  <title>Claims &amp; investigations | Refund</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/auth.css">
+  <link rel="stylesheet" href="../css/claims.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/claims.js" defer></script>
+</head>
+<body class="claims-page">
+  <a class="skip-link" href="#main">Skip to claims</a>
+  <header class="dashboard-header claims-header">
+    <a class="brand" href="../index.html" aria-label="Refund home">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 36 36" fill="none"><path d="M9 25.8V10.2h9.2c4 0 6.4 2.1 6.4 5.4 0 2.4-1.4 4.1-3.6 4.9l4.3 5.3h-5.4l-3.7-4.7h-2.7v4.7H9Zm4.5-8.5h4.3c1.4 0 2.2-.6 2.2-1.7 0-1-.8-1.7-2.2-1.7h-4.3v3.4Z" fill="currentColor"/><path d="M27.8 8.2v4.1" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span>
+      <span class="brand-name">refund<span>.</span></span>
+    </a>
+    <nav class="claims-header-nav" aria-label="Customer navigation">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="claims.html" aria-current="page">My claims</a>
+      <a href="recovery.html">Recovery &amp; payouts</a>
+      <a href="loans.html">Loans</a>
+      <a href="messages.html">Messages</a>
+      <a href="support.html">Help &amp; complaints</a>
+      <a href="notifications.html">Notifications</a>
+    </nav>
+    <div class="dashboard-user">
+      <span class="user-dot" aria-hidden="true"></span>
+      <span id="claims-user-email">Checking session…</span>
+      <button id="claims-sign-out" class="sign-out-button" type="button">Sign out</button>
+    </div>
+  </header>
+
+  <main id="main" class="claims-main">
+    <section class="claims-page-intro">
+      <div class="eyebrow eyebrow-dark"><span class="eyebrow-dot"></span> CUSTOMER WORKSPACE</div>
+      <div class="claims-intro-row">
+        <div>
+          <h1>Claims &amp; investigations</h1>
+          <p>Submit a direct claim, review your case references, and follow customer-visible updates in one place.</p>
+        </div>
+        <a class="claims-back-link" href="dashboard.html">← Dashboard</a>
+      </div>
+    </section>
+
+    <div id="claims-page-message" class="form-message claims-global-message" role="status" aria-live="polite" hidden></div>
+
+    <section class="claims-stats" aria-label="Claim summary">
+      <article class="claims-stat-card"><span class="claims-stat-label">All claims</span><strong id="stat-total">—</strong><span class="claims-stat-foot">Cases linked to your account</span></article>
+      <article class="claims-stat-card"><span class="claims-stat-label">In progress</span><strong id="stat-open">—</strong><span class="claims-stat-foot">Awaiting a next step or outcome</span></article>
+      <article class="claims-stat-card"><span class="claims-stat-label">Recently submitted</span><strong id="stat-recent">—</strong><span class="claims-stat-foot">Submitted in the last 30 days</span></article>
+    </section>
+
+    <section id="partner-referral-panel" class="partner-intake-panel" hidden>
+      <div class="partner-panel-icon" aria-hidden="true">↗</div>
+      <div class="partner-panel-copy">
+        <p class="section-overline">PARTNER-REFERRED CUSTOMER</p>
+        <h2>Your organization’s referral path</h2>
+        <p>You do not need to complete the generic claim form. Your referral details are handled through the organization’s process. Any claim that has been linked to your account will appear in “My claims” below.</p>
+        <div class="partner-review-status"><span id="partner-status-dot" class="status-dot"></span><span id="partner-status-text">Checking referral status…</span></div>
+      </div>
+    </section>
+
+    <div class="claims-content-grid">
+      <section id="direct-claim-panel" class="claim-compose-card" hidden>
+        <div class="claim-card-heading">
+          <div>
+            <p class="section-overline">START A CASE</p>
+            <h2>Submit a claim</h2>
+            <p>Share accurate details so the team can review your request.</p>
+          </div>
+          <span class="heading-step">01 / CLAIM</span>
+        </div>
+
+        <form id="claim-form" class="claims-form" novalidate>
+          <div class="claim-form-row">
+            <div class="claim-field">
+              <label for="claim-category">Claim type <span aria-hidden="true">*</span></label>
+              <select id="claim-category" name="category" required>
+                <option value="purchase_refund">Purchase refund</option>
+                <option value="scam_recovery">Scam-related recovery</option>
+                <option value="tax_refund">Tax refund</option>
+                <option value="service_dispute">Service dispute</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="claim-field">
+              <label for="claim-currency">Currency</label>
+              <select id="claim-currency" name="currency">
+                <option value="USD">USD — US Dollar</option>
+                <option value="EUR">EUR — Euro</option>
+                <option value="GBP">GBP — Pound Sterling</option>
+                <option value="CAD">CAD — Canadian Dollar</option>
+                <option value="AUD">AUD — Australian Dollar</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="claim-field">
+            <label for="claim-title">Claim title <span aria-hidden="true">*</span></label>
+            <input id="claim-title" name="title" type="text" minlength="5" maxlength="180" placeholder="e.g. Refund requested for a cancelled order" autocomplete="off" required>
+            <small>Use a short title that explains the issue.</small>
+          </div>
+
+          <div class="claim-field">
+            <label for="claim-description">What happened? <span aria-hidden="true">*</span></label>
+            <textarea id="claim-description" name="description" rows="5" minlength="20" maxlength="10000" placeholder="Describe the transaction or issue, the steps already taken, and what outcome you are requesting." required></textarea>
+            <div class="field-meta"><small>Do not include passwords or full payment-card numbers.</small><small id="description-count">0 / 10000</small></div>
+          </div>
+
+          <div class="claim-form-row">
+            <div class="claim-field">
+              <label for="claim-merchant">Company, seller, or organization</label>
+              <input id="claim-merchant" name="merchant_name" type="text" maxlength="200" placeholder="Name of the company involved">
+            </div>
+            <div class="claim-field">
+              <label for="claim-date">Transaction date</label>
+              <input id="claim-date" name="transaction_date" type="date">
+            </div>
+          </div>
+
+          <div class="claim-form-row claim-form-row-amount">
+            <div class="claim-field">
+              <label for="claim-amount">Amount requested (optional)</label>
+              <div class="amount-input-wrap"><span id="currency-symbol" aria-hidden="true">$</span><input id="claim-amount" name="requested_amount" type="number" min="0" max="999999999999" step="0.01" inputmode="decimal" placeholder="0.00"></div>
+              <small>This is the amount you are asking to recover, not a promise of recovery.</small>
+            </div>
+            <div class="claim-field evidence-field">
+              <label for="claim-files">Supporting documents (optional)</label>
+              <input id="claim-files" name="evidence" type="file" multiple accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp">
+              <small>PDF, JPG, PNG, or WEBP. Maximum 10 MB per file.</small>
+            </div>
+          </div>
+
+          <div id="claim-form-message" class="form-message claim-form-message" role="status" aria-live="polite" hidden></div>
+          <div class="claim-submit-row">
+            <p><span class="required-mark">*</span> Required fields</p>
+            <button id="claim-submit" class="auth-submit claim-submit" type="submit"><span class="button-spinner" aria-hidden="true"></span><span class="button-label">Submit claim securely</span><span class="button-arrow" aria-hidden="true">→</span></button>
+          </div>
+          <p class="claim-form-disclaimer">Submitting a claim starts a review; it does not guarantee that funds will be recovered. Only provide documents relevant to this claim.</p>
+        </form>
+      </section>
+
+      <aside class="claims-side-column">
+        <section class="claims-process-card">
+          <p class="section-overline">WHAT HAPPENS NEXT</p>
+          <h2>A clear process, step by step.</h2>
+          <ol class="claims-process-list">
+            <li><span>1</span><div><strong>Submission received</strong><p>Your claim gets a reference number and appears below.</p></div></li>
+            <li><span>2</span><div><strong>Initial review</strong><p>The team reviews the information and may ask for more details.</p></div></li>
+            <li><span>3</span><div><strong>Investigation</strong><p>Progress updates are recorded on the claim timeline.</p></div></li>
+          </ol>
+          <div class="claims-process-note"><span aria-hidden="true">i</span><p>Never share your account password or one-time security codes with someone claiming to help recover money.</p></div>
+        </section>
+        <section class="claims-privacy-card">
+          <span class="privacy-symbol" aria-hidden="true">⌑</span>
+          <div><h3>Handle evidence carefully</h3><p>Uploaded documents are stored in a private bucket and access is restricted by account and case permissions.</p></div>
+        </section>
+      </aside>
+    </div>
+
+    <section class="my-claims-section" aria-labelledby="my-claims-heading">
+      <div class="my-claims-heading-row">
+        <div><p class="section-overline">YOUR CASE HISTORY</p><h2 id="my-claims-heading">My claims</h2><p>Only claims linked to your signed-in account are shown.</p></div>
+        <button id="refresh-claims" class="outline-button" type="button">↻ Refresh</button>
+      </div>
+      <div id="claims-list-loading" class="claims-list-state">Loading your claims…</div>
+      <div id="claims-list-empty" class="claims-empty-state" hidden><span class="empty-state-mark" aria-hidden="true">↗</span><h3>No claims yet</h3><p id="claims-empty-description">When you submit your first claim, its reference and status will appear here.</p></div>
+      <div id="claims-list" class="claims-list" aria-live="polite"></div>
+    </section>
+
+    <section id="claim-detail-panel" class="claim-detail-panel" aria-labelledby="claim-detail-heading" hidden>
+      <div class="claim-detail-heading-row"><div><p class="section-overline">CASE ACTIVITY</p><h2 id="claim-detail-heading">Claim details</h2><p id="claim-detail-subtitle">Select a claim to view updates.</p></div><button id="close-claim-details" class="icon-close-button" type="button" aria-label="Close claim details">×</button></div>
+      <div class="claim-detail-columns">
+        <div><h3>Customer-visible timeline</h3><div id="claim-timeline" class="claim-timeline"><p class="muted-copy">Choose a claim to load its timeline.</p></div></div>
+        <div><div class="evidence-heading-row"><h3>Supporting documents</h3><button id="add-evidence-button" class="outline-button compact-button" type="button">+ Add documents</button></div><input id="add-evidence-files" type="file" multiple accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp" hidden><div id="claim-evidence-list" class="claim-evidence-list"><p class="muted-copy">No documents loaded.</p></div><p class="evidence-help">PDF, JPG, PNG, or WEBP files up to 10 MB each.</p></div>
+      </div>
+      <div id="claim-detail-message" class="form-message" role="status" aria-live="polite" hidden></div>
+    </section>
+
+    <footer class="claims-footer"><span>© <span id="current-year"></span> Refund</span><span>Secure claims workspace · Development version</span><a href="../privacy.html">Privacy information</a></footer>
+  </main>
+</body>
+</html>

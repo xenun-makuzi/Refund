@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#08171b">
+  <meta name="description" content="Authorized Refund support and complaints workspace."><title>Support &amp; complaints | Refund Operations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/communications.css"><link rel="stylesheet" href="../css/support.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../js/config.js"></script><script src="../js/supabase-client.js"></script><script src="../js/support-tickets.js" defer></script>
+</head>
+<body class="communications-page staff-workspace support-page" data-workspace="staff">
+  <header class="comms-header"><a class="comms-brand" href="../index.html"><span class="comms-brand-mark">R</span><span>refund<span class="brand-period">.</span><small>OPERATIONS</small></span></a><nav class="comms-nav" aria-label="Operations navigation"><a href="claims.html">Claims queue</a><a href="recovery.html">Recovery ledger</a><a href="loans.html">Loans</a><a href="messages.html">Messages</a><a href="notifications.html">Notifications</a></nav><div class="comms-account"><span id="support-user-email">Checking session…</span><button id="support-sign-out" type="button" class="comms-quiet-button">Sign out</button></div></header>
+  <main class="comms-main support-main">
+    <section class="comms-heading"><div><p class="comms-eyebrow">OPERATIONS / CUSTOMER CARE</p><h1>Support &amp; complaints</h1><p>Review requests, assign ownership, set priority, send customer updates, and keep internal notes separate from public replies.</p></div><button id="support-refresh" type="button" class="comms-outline-button">Refresh queue</button></section>
+    <div id="support-alert" class="comms-alert" role="status" aria-live="polite" hidden></div>
+    <section class="support-panel"><div class="support-panel-heading"><div><span class="comms-section-kicker">INCOMING REQUESTS</span><h2>Support queue</h2><p>Search ticket reference, subject, or customer email.</p></div><span id="support-queue-count" class="comms-count">Loading…</span></div>
+      <div class="support-list-toolbar support-admin-toolbar"><input id="support-search" type="search" placeholder="Search support tickets…" aria-label="Search tickets"><label for="support-admin-status" class="visually-hidden">Filter by status</label><select id="support-admin-status"><option value="all">All statuses</option><option value="open">Open</option><option value="in_progress">In progress</option><option value="waiting_for_customer">Waiting for customer</option><option value="escalated">Escalated</option><option value="resolved">Resolved</option><option value="closed">Closed</option></select><label for="support-admin-priority" class="visually-hidden">Filter by priority</label><select id="support-admin-priority"><option value="all">All priorities</option><option value="urgent">Urgent</option><option value="high">High</option><option value="normal">Normal</option><option value="low">Low</option></select></div>
+      <div id="support-ticket-list" class="support-ticket-list support-admin-ticket-list"><p class="comms-muted">Loading support requests…</p></div>
+    </section>
+    <section id="support-ticket-detail" class="support-panel support-detail-panel" aria-labelledby="support-detail-title" hidden>
+      <div class="support-panel-heading support-detail-heading"><div><span class="comms-section-kicker">TICKET FILE</span><h2 id="support-detail-title">Choose a support request</h2><p id="support-detail-meta">Ticket details and messages appear here.</p></div><span id="support-detail-status" class="support-status-chip">—</span></div>
+      <div id="support-ticket-description" class="support-ticket-description"></div>
+      <div class="support-admin-detail-grid"><div><h3 class="support-subheading">Conversation &amp; internal notes</h3><div id="support-thread" class="support-thread"><p class="comms-muted">Select a ticket to load the conversation.</p></div>
+        <form id="support-reply-form" class="support-reply-form"><label for="support-reply-visibility">Message visibility</label><select id="support-reply-visibility"><option value="customer">Customer-visible reply</option><option value="internal">Internal staff note</option></select><label for="support-reply-body">Message</label><textarea id="support-reply-body" rows="3" required minlength="1" maxlength="5000" placeholder="Write a reply or internal note…"></textarea><div class="support-form-footer"><span>Internal notes are never shown to customers.</span><button id="support-reply-submit" class="comms-primary-button" type="submit">Add message</button></div></form>
+      </div><aside class="support-admin-side"><form id="support-update-form" class="support-form"><span class="comms-section-kicker">TICKET MANAGEMENT</span><h3 class="support-subheading">Status, priority &amp; owner</h3>
+        <label for="support-new-status">Status</label><select id="support-new-status"><option value="open">Open</option><option value="in_progress">In progress</option><option value="waiting_for_customer">Waiting for customer</option><option value="escalated">Escalated</option><option value="resolved">Resolved</option><option value="closed">Closed</option></select>
+        <label for="support-new-priority">Priority</label><select id="support-new-priority"><option value="low">Low</option><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option></select>
+        <label for="support-new-assignee">Assigned staff member</label><select id="support-new-assignee"><option value="">Unassigned</option></select>
+        <label for="support-customer-note">Customer-visible status update <span class="support-optional">Required to resolve/close</span></label><textarea id="support-customer-note" rows="4" maxlength="5000" placeholder="Explain the status change to the customer. Leave blank for an internal-only change except when resolving or closing."></textarea>
+        <button id="support-update-submit" class="comms-primary-button" type="submit">Save ticket changes</button><p id="support-investigator-note" class="support-small-note" hidden>As an investigator, you can update status on assigned tickets, but cannot change priority or assignment.</p>
+      </form><div id="support-audit-events" class="support-audit-events"><h3 class="support-subheading">Visible ticket history</h3><p class="comms-muted">Select a ticket to load history.</p></div></aside></div>
+    </section>
+    <p class="comms-footnote">Only handle customer information needed for the support request. Use internal notes for staff coordination and customer-visible replies for information appropriate to share with the customer.</p>
+  </main>
+</body></html>

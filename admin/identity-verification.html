@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#08171b">
+  <title>Identity verification queue | Refund Operations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/admin-control-center.css">
+  <link rel="stylesheet" href="../css/identity-admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/identity-verification-admin.js" defer></script>
+</head>
+<body class="identity-admin-page">
+  <a class="skip-link" href="#identity-admin-main">Skip to identity review</a>
+  <header class="identity-admin-topbar">
+    <a class="identity-admin-brand" href="../index.html"><span class="identity-brand-mark">r.</span><span>refund<span class="mint-dot">.</span><small>OPERATIONS</small></span></a>
+    <div class="identity-admin-context"><span class="live-dot"></span> Identity verification</div>
+    <div class="identity-admin-user"><div><strong id="identity-admin-name">Checking access…</strong><small id="identity-admin-role">Verifying admin role</small></div><button id="identity-admin-signout" type="button">Sign out</button></div>
+  </header>
+  <div class="identity-admin-shell">
+    <aside class="identity-admin-sidebar" aria-label="Admin navigation">
+      <p class="side-label">WORKSPACE</p>
+      <a href="claims.html">Claims queue</a>
+      <a href="recovery.html">Recovery ledger</a>
+      <a href="loans.html">Loans &amp; withdrawals</a>
+      <a href="messages.html">Customer messages</a>
+      <a href="support.html">Support &amp; complaints</a>
+      <a class="is-active" href="identity-verification.html" aria-current="page">Identity verification</a>
+      <a href="workflows.html">Claim workflows</a>
+      <a href="risk-review.html">Risk review</a>
+      <a href="notifications.html">Notifications</a>
+      <div class="identity-admin-side-note"><strong>Sensitive information</strong><p>Open documents only for a legitimate verification review. Signed links expire quickly; never download or share documents unnecessarily.</p></div>
+    </aside>
+    <main class="identity-admin-main" id="identity-admin-main">
+      <div id="identity-admin-message" class="identity-admin-notice" role="status" aria-live="polite" hidden></div>
+      <section class="identity-admin-heading">
+        <div><div class="admin-kicker">ACCOUNT SECURITY / KYC</div><h1>Identity review queue</h1><p>Review the submitted documents and record an auditable decision. Customer verification status changes only after this review action.</p></div>
+        <button id="identity-admin-refresh" class="outline-button" type="button">↻ Refresh queue</button>
+      </section>
+      <section class="identity-admin-stats" aria-label="Identity review counts">
+        <article><span>Awaiting review</span><strong id="identity-stat-pending">—</strong><small>Pending submissions</small></article>
+        <article><span>More information needed</span><strong id="identity-stat-action">—</strong><small>Awaiting customer follow-up</small></article>
+        <article><span>Verified</span><strong id="identity-stat-verified">—</strong><small>Approved submissions</small></article>
+      </section>
+      <section class="identity-admin-queue">
+        <div class="queue-heading"><div><div class="admin-kicker">SUBMISSIONS</div><h2>Document submissions</h2><p>Use filters to find pending or previously reviewed submissions.</p></div><label class="filter-label" for="identity-status-filter">Status <select id="identity-status-filter"><option value="pending">Pending review</option><option value="action_required">Action required</option><option value="verified">Verified</option><option value="rejected">Rejected</option><option value="all">All statuses</option></select></label></div>
+        <div id="identity-submissions-list" class="identity-submissions-list"><div class="queue-loading"><span class="tiny-spinner"></span> Loading identity submissions…</div></div>
+      </section>
+      <footer class="identity-admin-footer"><span>Refund Operations</span><span>Handle identity documents according to the approved privacy and retention policy.</span><a href="../customer/dashboard.html">Customer view ↗</a></footer>
+    </main>
+  </div>
+</body>
+</html>

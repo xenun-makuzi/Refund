@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07151a">
+  <meta name="description" content="Manage loan applications and withdrawal requests in your Refund account.">
+  <title>Loans & withdrawals | Refund</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/loans.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/customer-loans.js" defer></script>
+</head>
+<body class="loan-page">
+  <a class="skip-link" href="#main-content">Skip to loans</a>
+  <header class="loan-topbar">
+    <a class="loan-brand" href="../index.html" aria-label="Refund home"><span class="loan-brand-mark">R</span><span>refund<span class="brand-dot">.</span></span></a>
+    <nav class="loan-nav" aria-label="Customer navigation">
+      <a href="dashboard.html">Overview</a>
+      <a href="claims.html">My claims</a>
+      <a href="recovery.html">Recovery & payouts</a>
+      <a class="active" href="loans.html" aria-current="page">Loans</a>
+      <a href="messages.html">Messages</a>
+      <a href="support.html">Help &amp; complaints</a>
+      <a href="notifications.html">Notifications</a>
+    </nav>
+    <div class="loan-user"><span id="loan-user-email">Checking session…</span><button id="loan-sign-out" type="button" class="loan-signout">Sign out</button></div>
+  </header>
+
+  <main id="main-content" class="loan-main">
+    <section class="loan-hero">
+      <div>
+        <p class="loan-eyebrow"><span></span> CUSTOMER PORTAL / LOANS</p>
+        <h1>Loans &amp; withdrawals</h1>
+        <p>Submit a loan application, follow the decision, and request withdrawal of an approved loan.</p>
+      </div>
+      <div class="loan-hero-mark" aria-hidden="true"><span>R</span><i></i><i></i><i></i></div>
+    </section>
+
+    <div id="loan-page-message" class="loan-message" role="status" aria-live="polite" hidden></div>
+
+    <section id="loan-verification-notice" class="loan-verification-notice" hidden>
+      <span class="notice-icon" aria-hidden="true">!</span>
+      <div><strong id="loan-verification-title">Identity verification status</strong><p id="loan-verification-copy">Identity verification is required before a withdrawal request can be submitted. You can still submit an application.</p></div>
+    </section>
+
+    <section class="loan-metrics" aria-label="Loan application summary">
+      <article class="loan-metric"><span class="metric-caption">Applications</span><strong id="loan-metric-total">—</strong><small>All your loan requests</small></article>
+      <article class="loan-metric"><span class="metric-caption">Approved</span><strong id="loan-metric-approved">—</strong><small>Approved applications</small></article>
+      <article class="loan-metric"><span class="metric-caption">Withdrawal requests</span><strong id="loan-metric-withdrawals">—</strong><small>Submitted for review</small></article>
+    </section>
+
+    <div class="loan-content-grid">
+      <section class="loan-panel loan-apply-panel" aria-labelledby="apply-heading">
+        <div class="loan-panel-heading"><div><p class="loan-section-label">NEW REQUEST</p><h2 id="apply-heading">Apply for a loan</h2><p>Submit your request for an administrator to review.</p></div><span class="loan-number-badge">01</span></div>
+        <form id="loan-application-form" class="loan-form">
+          <div class="loan-field-grid">
+            <div class="loan-field"><label for="requested-amount">Amount requested</label><input id="requested-amount" name="requested-amount" type="number" min="0.01" max="999999999999.99" step="0.01" inputmode="decimal" placeholder="1000.00" required></div>
+            <div class="loan-field"><label for="loan-currency">Currency</label><select id="loan-currency" name="currency" required><option value="USD">USD — US Dollar</option><option value="EUR">EUR — Euro</option><option value="GBP">GBP — Pound Sterling</option><option value="XAF">XAF — Central African CFA franc</option><option value="CAD">CAD — Canadian Dollar</option></select></div>
+          </div>
+          <div class="loan-field"><label for="loan-purpose">What is the loan for?</label><textarea id="loan-purpose" name="purpose" rows="5" minlength="10" maxlength="3000" placeholder="Describe the purpose of your request (10–3000 characters)." required></textarea><small>Give enough information for the review team to understand your request.</small></div>
+          <div class="loan-field"><label for="requested-term">Preferred term <span>(optional)</span></label><select id="requested-term" name="term"><option value="">Not specified</option><option value="3">3 months</option><option value="6">6 months</option><option value="12">12 months</option><option value="18">18 months</option><option value="24">24 months</option><option value="36">36 months</option><option value="48">48 months</option><option value="60">60 months</option></select></div>
+          <button id="loan-application-submit" class="loan-primary-button" type="submit"><span>Submit application</span><span aria-hidden="true">↗</span></button>
+          <p class="loan-form-footnote">Submitting an application does not guarantee approval. Approval is not a confirmation that funds have been disbursed.</p>
+        </form>
+      </section>
+
+      <section class="loan-panel loan-process-panel" aria-labelledby="process-heading">
+        <div class="loan-panel-heading"><div><p class="loan-section-label">HOW IT WORKS</p><h2 id="process-heading">From request to decision</h2><p>Your dashboard will reflect updates entered by the review team.</p></div></div>
+        <div class="loan-steps">
+          <div class="loan-step"><span>1</span><div><strong>Submit an application</strong><p>Provide the amount, currency, and purpose.</p></div></div>
+          <div class="loan-step"><span>2</span><div><strong>Administrator review</strong><p>Your request may be approved, rejected, or returned for more information.</p></div></div>
+          <div class="loan-step"><span>3</span><div><strong>Request withdrawal</strong><p>If approved, request withdrawal using a supported destination method.</p></div></div>
+          <div class="loan-step"><span>4</span><div><strong>Track the outcome</strong><p>The team records the withdrawal decision and confirms payment separately.</p></div></div>
+        </div>
+        <div class="loan-honesty-note"><span aria-hidden="true">ⓘ</span><p>Funding source, applicable loan terms, and availability depend on the company's approved arrangements. This development module does not transfer funds automatically.</p></div>
+      </section>
+    </div>
+
+    <section class="loan-panel loan-applications-panel" aria-labelledby="applications-heading">
+      <div class="loan-panel-heading loan-panel-heading-wide"><div><p class="loan-section-label">YOUR RECORDS</p><h2 id="applications-heading">Your applications</h2><p>Review application status, decisions, and withdrawal progress.</p></div><button id="loan-refresh" class="loan-secondary-button" type="button">↻ Refresh</button></div>
+      <div id="loan-applications-list" class="loan-applications-list"><div class="loan-empty-loading">Loading your applications…</div></div>
+    </section>
+
+    <section id="loan-withdrawal-panel" class="loan-panel loan-withdrawal-panel" aria-labelledby="withdrawal-heading" hidden>
+      <div class="loan-panel-heading loan-panel-heading-wide"><div><p class="loan-section-label">APPROVED LOAN</p><h2 id="withdrawal-heading">Request loan withdrawal</h2><p id="withdrawal-context">This request is for the full approved amount.</p></div><button id="loan-withdrawal-cancel" class="loan-close-button" type="button" aria-label="Close withdrawal form">×</button></div>
+      <div class="withdrawal-amount-summary"><span>Approved amount requested for withdrawal</span><strong id="withdrawal-approved-amount">—</strong></div>
+      <form id="loan-withdrawal-form" class="loan-form">
+        <input id="withdrawal-application-id" type="hidden">
+        <div class="loan-field"><label for="withdrawal-method">Payout method</label><select id="withdrawal-method" required><option value="bank_transfer">Bank transfer</option><option value="crypto">Cryptocurrency</option><option value="other">Other method</option></select></div>
+        <div id="withdrawal-bank-fields" class="destination-fields">
+          <div class="loan-field-grid"><div class="loan-field"><label for="loan-bank-name">Bank name</label><input id="loan-bank-name" maxlength="120" autocomplete="off"></div><div class="loan-field"><label for="loan-account-name">Account-holder name</label><input id="loan-account-name" maxlength="160" autocomplete="off"></div></div>
+          <div class="loan-field-grid"><div class="loan-field"><label for="loan-account-number">Account number</label><input id="loan-account-number" maxlength="100" autocomplete="off"></div><div class="loan-field"><label for="loan-bank-country">Bank country <span>(optional)</span></label><input id="loan-bank-country" maxlength="80" autocomplete="country-name"></div></div>
+          <div class="loan-field"><label for="loan-routing-number">Routing / sort code <span>(optional, where applicable)</span></label><input id="loan-routing-number" maxlength="80" autocomplete="off"></div>
+        </div>
+        <div id="withdrawal-crypto-fields" class="destination-fields" hidden>
+          <div class="loan-field-grid"><div class="loan-field"><label for="loan-crypto-asset">Asset</label><input id="loan-crypto-asset" maxlength="20" placeholder="e.g. USDC"></div><div class="loan-field"><label for="loan-crypto-network">Network</label><input id="loan-crypto-network" maxlength="80" placeholder="e.g. Ethereum"></div></div>
+          <div class="loan-field"><label for="loan-wallet-address">Wallet address</label><textarea id="loan-wallet-address" rows="3" maxlength="200" autocomplete="off" placeholder="Enter the destination address carefully"></textarea></div>
+        </div>
+        <div id="withdrawal-other-fields" class="destination-fields" hidden><div class="loan-field"><label for="loan-other-details">Describe your preferred method</label><textarea id="loan-other-details" rows="3" maxlength="500"></textarea></div></div>
+        <div class="loan-sensitive-note"><strong>Check the details carefully.</strong> Incorrect bank or wallet details can delay or prevent payment. Only enter destination details for an account or wallet you are authorized to use.</div>
+        <button id="loan-withdrawal-submit" class="loan-primary-button" type="submit"><span>Submit withdrawal request</span><span aria-hidden="true">↗</span></button>
+      </form>
+    </section>
+
+    <footer class="loan-footer"><span>Refund customer portal</span><span>Loan decisions and payment status are recorded separately.</span></footer>
+  </main>
+</body>
+</html>

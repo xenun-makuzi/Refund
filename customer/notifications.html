@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#07151a">
+  <title>Notifications | Refund</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/communications.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../js/config.js"></script><script src="../js/supabase-client.js"></script><script src="../js/notifications.js" defer></script>
+</head>
+<body class="communications-page" data-workspace="customer">
+  <header class="comms-header"><a class="comms-brand" href="../index.html"><span class="comms-brand-mark">R</span><span>refund<span class="brand-period">.</span><small>CUSTOMER PORTAL</small></span></a><nav class="comms-nav" aria-label="Customer navigation"><a href="dashboard.html">Dashboard</a><a href="claims.html">My claims</a><a href="messages.html">Messages</a><a href="recovery.html">Recovery &amp; payouts</a><a href="loans.html">Loans</a><a href="support.html">Help &amp; complaints</a></nav><div class="comms-account"><span id="comms-user-email">Checking session…</span><button id="comms-sign-out" type="button" class="comms-quiet-button">Sign out</button></div></header>
+  <main class="comms-main notifications-main"><div class="comms-heading"><div><p class="comms-eyebrow">CUSTOMER WORKSPACE</p><h1>Notifications</h1><p>Important updates about claim reviews, messages, loan decisions, and recovery payouts.</p></div><button id="mark-all-read" class="comms-outline-button" type="button">Mark all as read</button></div>
+    <div id="notifications-message" class="comms-alert" role="status" aria-live="polite" hidden></div><section class="notifications-panel"><div class="notifications-panel-heading"><div><span class="comms-section-kicker">YOUR UPDATES</span><h2>Recent activity</h2></div><span id="notifications-count" class="comms-count">Loading…</span></div><div id="notifications-list" class="notifications-list"><p class="comms-muted">Loading notifications…</p></div></section><p class="comms-footnote">These are in-app notifications. Email, SMS, and push delivery can be added separately.</p></main>
+</body></html>

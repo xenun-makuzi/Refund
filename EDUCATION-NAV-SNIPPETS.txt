@@ -1,0 +1,19 @@
+REFUND EDUCATION CENTER — OPTIONAL NAVIGATION SNIPPETS
+======================================================
+Do not replace full existing pages just to add a link. Paste only the relevant <a> element into the corresponding navigation.
+
+1) HOMEPAGE: inside <nav class="primary-nav" ...> in index.html
+<a href="education.html">Resource center</a>
+
+2) CUSTOMER WORKSPACE: in the customer dashboard card grid (customer/dashboard.html)
+<article class="dashboard-feature-card">
+  <span class="dashboard-feature-icon">07</span>
+  <h2>Fraud awareness &amp; guides</h2>
+  <p>Read general guidance on safer accounts, claim preparation, and understanding recovery processes.</p>
+  <a class="dashboard-card-link" href="../education.html">Open resource center <span aria-hidden="true">→</span></a>
+</article>
+
+3) ADMIN SIDEBAR: add with the other workspace links in admin pages
+<a href="education.html">Education center</a>
+
+In admin/education.html, its own link is already included.

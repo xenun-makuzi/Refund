@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#08171b">
+  <meta name="description" content="Authorized Refund claims investigation workspace.">
+  <title>Case management | Refund Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/admin-claims.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/admin-claims.js" defer></script>
+</head>
+<body class="admin-claims-page">
+  <a class="skip-link" href="#main-content">Skip to case queue</a>
+  <header class="admin-topbar">
+    <a class="admin-brand" href="../index.html" aria-label="Refund home">
+      <span class="brand-mark" aria-hidden="true">R</span>
+      <span>refund<span class="brand-period">.</span><small>OPERATIONS</small></span>
+    </a>
+    <div class="topbar-context"><span class="live-dot" aria-hidden="true"></span> Case management</div>
+    <div class="admin-identity">
+      <div class="identity-copy"><strong id="admin-user-name">Checking access…</strong><span id="admin-user-role">Verifying administrator role</span></div>
+      <button id="admin-sign-out" class="topbar-signout" type="button">Sign out</button>
+    </div>
+  </header>
+
+  <div class="admin-shell">
+    <aside class="admin-sidebar" aria-label="Admin navigation">
+      <p class="sidebar-label">WORKSPACE</p>
+      <a class="sidebar-link active" href="claims.html" aria-current="page"><span aria-hidden="true">▦</span> Claims queue</a>
+      <a class="sidebar-link" href="recovery.html"><span aria-hidden="true">◇</span> Recovery ledger</a>
+      <a class="sidebar-link" href="loans.html"><span aria-hidden="true">▤</span> Loans &amp; withdrawals</a>
+      <a class="sidebar-link" href="messages.html"><span aria-hidden="true">✉</span> Customer messages</a>
+      <a class="sidebar-link" href="support.html"><span aria-hidden="true">?</span> Support &amp; complaints</a>
+      <a class="sidebar-link" href="notifications.html"><span aria-hidden="true">•</span> Notifications</a>
+      <a class="sidebar-link" href="../customer/claims.html"><span aria-hidden="true">↗</span> Customer view</a>
+      <div class="sidebar-divider"></div>
+      <p class="sidebar-label">QUEUE VIEWS</p>
+      <button class="queue-filter active" type="button" data-quick-filter="all"><span>All cases</span><span id="count-all" class="queue-count">—</span></button>
+      <button class="queue-filter" type="button" data-quick-filter="needs_review"><span>Needs review</span><span id="count-review" class="queue-count">—</span></button>
+      <button class="queue-filter" type="button" data-quick-filter="unassigned"><span>Unassigned</span><span id="count-unassigned" class="queue-count">—</span></button>
+      <button class="queue-filter" type="button" data-quick-filter="awaiting_information"><span>Awaiting information</span><span id="count-awaiting" class="queue-count">—</span></button>
+      <div class="sidebar-note"><span class="sidebar-note-icon" aria-hidden="true">⌑</span><p><strong>Privacy first</strong><br>Only open case evidence when it is needed for your assigned duties.</p></div>
+    </aside>
+
+    <main id="main-content" class="admin-main">
+      <div id="admin-global-message" class="admin-message" role="status" aria-live="polite" hidden></div>
+
+      <section class="admin-page-heading">
+        <div>
+          <div class="eyebrow"><span class="eyebrow-mark"></span> OPERATIONS / CLAIMS</div>
+          <h1>Investigation workspace</h1>
+          <p>Review incoming claims, assign investigators, and keep case decisions auditable.</p>
+        </div>
+        <button id="refresh-claims" class="secondary-button" type="button"><span aria-hidden="true">↻</span> Refresh queue</button>
+      </section>
+
+      <section class="admin-stats-grid" aria-label="Queue summary">
+        <article class="admin-stat-card"><div class="stat-top"><span>Total cases</span><span class="stat-icon">▦</span></div><strong id="stat-total">—</strong><small>Cases visible to your role</small></article>
+        <article class="admin-stat-card"><div class="stat-top"><span>Needs review</span><span class="stat-icon stat-icon-amber">◷</span></div><strong id="stat-review">—</strong><small>Newly submitted cases</small></article>
+        <article class="admin-stat-card"><div class="stat-top"><span>Unassigned</span><span class="stat-icon stat-icon-blue">↗</span></div><strong id="stat-unassigned">—</strong><small>Waiting for an investigator</small></article>
+        <article class="admin-stat-card"><div class="stat-top"><span>Awaiting information</span><span class="stat-icon stat-icon-violet">…</span></div><strong id="stat-awaiting">—</strong><small>Follow-up required</small></article>
+      </section>
+
+      <section class="queue-panel" aria-labelledby="queue-title">
+        <div class="queue-panel-heading">
+          <div><p class="section-label">CASE INTAKE</p><h2 id="queue-title">Claims queue</h2><p>Search case references, subjects, merchants, or claimant names.</p></div>
+          <span id="results-count" class="results-count">Loading cases…</span>
+        </div>
+        <div class="queue-toolbar">
+          <label class="search-box"><span aria-hidden="true">⌕</span><input id="claim-search" type="search" placeholder="Search cases…" autocomplete="off" aria-label="Search claims"></label>
+          <label class="filter-select-wrap"><span class="visually-hidden">Filter by status</span><select id="status-filter"><option value="all">All statuses</option><option value="submitted">Submitted</option><option value="under_review">Under review</option><option value="awaiting_information">Awaiting information</option><option value="investigation_in_progress">Investigation in progress</option><option value="recovery_in_progress">Recovery in progress</option><option value="partially_recovered">Partially recovered</option><option value="recovery_complete">Recovery complete</option><option value="not_eligible">Not eligible</option><option value="closed">Closed</option></select></label>
+          <label class="filter-select-wrap"><span class="visually-hidden">Filter by category</span><select id="category-filter"><option value="all">All claim types</option><option value="purchase_refund">Purchase refund</option><option value="scam_recovery">Scam recovery</option><option value="tax_refund">Tax refund</option><option value="service_dispute">Service dispute</option><option value="other">Other</option></select></label>
+        </div>
+        <div class="table-scroll">
+          <table class="claims-table">
+            <thead><tr><th>Case / claimant</th><th>Type</th><th>Submitted</th><th>Requested amount</th><th>Status</th><th>Assigned to</th><th><span class="visually-hidden">Actions</span></th></tr></thead>
+            <tbody id="claims-table-body"><tr><td colspan="7" class="table-placeholder">Loading the claims queue…</td></tr></tbody>
+          </table>
+        </div>
+        <div id="queue-empty" class="queue-empty" hidden><span class="empty-symbol">⌕</span><h3>No cases match these filters</h3><p>Try changing your search or selecting another status.</p><button id="clear-filters" class="text-button" type="button">Clear filters</button></div>
+      </section>
+
+      <section id="case-detail" class="case-detail-panel" aria-labelledby="case-detail-title" hidden>
+        <div class="case-detail-header">
+          <div><p class="section-label">CASE FILE</p><div class="case-detail-title-row"><h2 id="case-detail-title">Case details</h2><span id="detail-status" class="status-pill">—</span></div><p id="detail-reference" class="case-reference-text">Select a case from the queue.</p></div>
+          <button id="close-case-detail" class="close-detail-button" type="button" aria-label="Close case details">×</button>
+        </div>
+        <div id="detail-message" class="admin-message" role="status" aria-live="polite" hidden></div>
+        <div class="case-detail-grid">
+          <div class="case-detail-primary">
+            <article class="detail-card summary-card">
+              <div class="detail-card-heading"><div><p class="section-label">CLAIM SUMMARY</p><h3 id="detail-claim-title">—</h3></div><span id="detail-origin" class="origin-chip">—</span></div>
+              <div class="summary-meta-grid"><div><span>Claimant</span><strong id="detail-claimant">—</strong></div><div><span>Claim type</span><strong id="detail-category">—</strong></div><div><span>Submitted</span><strong id="detail-submitted">—</strong></div><div><span>Requested amount</span><strong id="detail-amount">—</strong></div><div><span>Company / merchant</span><strong id="detail-merchant">—</strong></div><div><span>Transaction date</span><strong id="detail-transaction-date">—</strong></div></div>
+              <div class="description-block"><span>Customer description</span><p id="detail-description">—</p></div>
+            </article>
+
+            <article class="detail-card">
+              <div class="detail-card-heading"><div><p class="section-label">EVIDENCE</p><h3>Supporting documents</h3></div><span id="evidence-count" class="mini-count">0 files</span></div>
+              <div id="evidence-list" class="evidence-list"><p class="muted-small">Select a case to load its evidence.</p></div>
+              <p class="security-hint">Documents are in private storage. Secure links are generated only after access checks.</p>
+            </article>
+
+            <article class="detail-card timeline-card">
+              <div class="detail-card-heading"><div><p class="section-label">AUDIT TRAIL</p><h3>Case activity</h3></div><span id="activity-count" class="mini-count">0 entries</span></div>
+              <div id="activity-timeline" class="admin-timeline"><p class="muted-small">Select a case to load the activity history.</p></div>
+            </article>
+          </div>
+
+          <aside class="case-detail-actions">
+            <article class="detail-card action-card">
+              <p class="section-label">CASE OWNERSHIP</p><h3>Assign investigator</h3>
+              <p class="card-helper">Only users with the investigator role can be assigned.</p>
+              <form id="assign-form" class="admin-form">
+                <label for="investigator-select">Investigator</label>
+                <select id="investigator-select" required><option value="">Choose an investigator</option></select>
+                <button class="admin-primary-button" type="submit" id="assign-button">Save assignment</button>
+              </form>
+              <div id="assign-message" class="inline-message" role="status" aria-live="polite" hidden></div>
+            </article>
+
+            <article class="detail-card action-card">
+              <p class="section-label">INVESTIGATION</p><h3>Update case status</h3>
+              <p class="card-helper">Status changes are recorded in the case history. A customer-facing explanation is required when marking a case not eligible or closed.</p>
+              <form id="status-form" class="admin-form">
+                <label for="new-status">New status</label>
+                <select id="new-status" required>
+                  <option value="submitted">Submitted</option><option value="under_review">Under review</option><option value="awaiting_information">Awaiting information</option><option value="investigation_in_progress">Investigation in progress</option><option value="recovery_in_progress">Recovery in progress</option><option value="partially_recovered">Partially recovered</option><option value="recovery_complete">Recovery complete</option><option value="not_eligible">Not eligible</option><option value="closed">Closed</option>
+                </select>
+                <label for="status-customer-message">Customer-facing update <span class="optional-label">Required for some outcomes</span></label>
+                <textarea id="status-customer-message" rows="4" maxlength="5000" placeholder="Explain the decision or share a progress update…"></textarea>
+                <button class="admin-primary-button" type="submit" id="status-button">Save status update</button>
+              </form>
+              <div id="status-message" class="inline-message" role="status" aria-live="polite" hidden></div>
+            </article>
+
+            <article class="detail-card action-card">
+              <p class="section-label">COMMUNICATION</p><h3>Add case note</h3>
+              <form id="activity-form" class="admin-form">
+                <label for="activity-visibility">Visibility</label>
+                <select id="activity-visibility"><option value="internal">Internal note — staff only</option><option value="customer">Customer-visible message</option></select>
+                <label for="activity-body">Message</label>
+                <textarea id="activity-body" rows="4" maxlength="5000" minlength="1" placeholder="Record a case note or customer update…" required></textarea>
+                <button class="admin-primary-button" type="submit" id="activity-button">Add to case history</button>
+              </form>
+              <div id="activity-form-message" class="inline-message" role="status" aria-live="polite" hidden></div>
+            </article>
+          </aside>
+        </div>
+      </section>
+
+      <footer class="admin-footer"><span>Refund Operations · Development workspace</span><span>Use case data only for authorized business purposes.</span></footer>
+    </main>
+  </div>
+</body>
+</html>

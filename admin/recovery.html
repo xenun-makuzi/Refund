@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071a1c">
+  <meta name="description" content="Authorized Refund recovery ledger and payout administration workspace.">
+  <title>Recovery ledger | Refund Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/admin-recovery.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/admin-recovery.js" defer></script>
+</head>
+<body class="recovery-admin-page">
+  <a class="skip-link" href="#main-content">Skip to recovery ledger</a>
+  <header class="recovery-topbar">
+    <a class="recovery-brand" href="../index.html" aria-label="Refund home">
+      <span class="recovery-brand-mark">R</span>
+      <span>refund<span class="brand-period">.</span><small>OPERATIONS</small></span>
+    </a>
+    <div class="topbar-title"><span class="live-dot"></span> Financial operations</div>
+    <div class="topbar-user">
+      <div><strong id="admin-user-name">Checking access…</strong><span id="admin-user-role">Verifying administrator role</span></div>
+      <button id="sign-out-button" class="signout-button" type="button">Sign out</button>
+    </div>
+  </header>
+
+  <div class="recovery-layout">
+    <aside class="recovery-sidebar" aria-label="Admin navigation">
+      <p class="sidebar-eyebrow">WORKSPACE</p>
+      <a class="sidebar-link" href="claims.html"><span aria-hidden="true">▦</span> Claims queue</a>
+      <a class="sidebar-link active" href="recovery.html" aria-current="page"><span aria-hidden="true">◇</span> Recovery ledger</a>
+      <a class="sidebar-link" href="loans.html"><span aria-hidden="true">▤</span> Loans &amp; withdrawals</a>
+      <a class="sidebar-link" href="messages.html"><span aria-hidden="true">✉</span> Customer messages</a>
+      <a class="sidebar-link" href="support.html"><span aria-hidden="true">?</span> Support &amp; complaints</a>
+      <a class="sidebar-link" href="notifications.html"><span aria-hidden="true">•</span> Notifications</a>
+      <a class="sidebar-link" href="../customer/claims.html"><span aria-hidden="true">↗</span> Customer claims view</a>
+      <div class="sidebar-rule"></div>
+      <div class="sidebar-reminder"><span aria-hidden="true">⌑</span><div><strong>Ledger integrity</strong><p>Record only verified installments. Corrections should be entered as audited reversals.</p></div></div>
+    </aside>
+
+    <main id="main-content" class="recovery-main">
+      <div id="global-message" class="page-message" role="status" aria-live="polite" hidden></div>
+      <section class="page-heading">
+        <div>
+          <p class="eyebrow">OPERATIONS / RECOVERY</p>
+          <h1>Recovery ledger</h1>
+          <p>Set approved recovery targets, record verified installments, and review payout requests.</p>
+        </div>
+        <button id="refresh-button" class="button button-secondary" type="button"><span aria-hidden="true">↻</span> Refresh data</button>
+      </section>
+
+      <section class="metric-grid" aria-label="Recovery summary">
+        <article class="metric-card"><div class="metric-card-top"><span>Claims</span><span class="metric-symbol">▦</span></div><strong id="metric-claims">—</strong><small>Claims in the current queue</small></article>
+        <article class="metric-card"><div class="metric-card-top"><span>Recovery targets</span><span class="metric-symbol">◎</span></div><strong id="metric-accounts">—</strong><small>Claims with an approved target</small></article>
+        <article class="metric-card"><div class="metric-card-top"><span>Fully recovered</span><span class="metric-symbol green-symbol">✓</span></div><strong id="metric-full">—</strong><small>Recovery target reached</small></article>
+        <article class="metric-card"><div class="metric-card-top"><span>Open payout requests</span><span class="metric-symbol amber-symbol">◷</span></div><strong id="metric-payouts">—</strong><small>Awaiting a final outcome</small></article>
+      </section>
+
+      <section class="panel claim-ledger-panel" aria-labelledby="claims-heading">
+        <div class="panel-heading">
+          <div><p class="section-label">RECOVERY MANAGEMENT</p><h2 id="claims-heading">Claims and recovery targets</h2><p>Select a claim to configure its target and record installments.</p></div>
+          <span id="claims-count" class="result-count">Loading…</span>
+        </div>
+        <div class="table-toolbar">
+          <label class="search-field"><span aria-hidden="true">⌕</span><input id="claim-search" type="search" placeholder="Search reference, claim, claimant…" autocomplete="off"></label>
+          <label class="filter-field"><span class="sr-only">Filter recovery status</span><select id="recovery-filter"><option value="all">All recovery states</option><option value="not_configured">Target not set</option><option value="in_progress">In progress</option><option value="fully_recovered">Fully recovered</option></select></label>
+        </div>
+        <div class="table-scroll">
+          <table class="recovery-table">
+            <thead><tr><th>Claim / customer</th><th>Case status</th><th>Target</th><th>Recovered</th><th>Outstanding</th><th>Recovery status</th><th></th></tr></thead>
+            <tbody id="claims-table-body"><tr><td colspan="7" class="table-placeholder">Loading claims…</td></tr></tbody>
+          </table>
+        </div>
+        <div id="claims-empty" class="empty-state" hidden><span class="empty-mark">⌕</span><h3>No matching claims</h3><p>Try a different search or filter.</p><button id="clear-filters" class="text-button" type="button">Clear filters</button></div>
+      </section>
+
+      <section id="recovery-detail" class="panel recovery-detail-panel" aria-labelledby="detail-heading" hidden>
+        <div class="detail-header">
+          <div><p class="section-label">SELECTED CASE</p><h2 id="detail-heading">Recovery account</h2><p id="detail-reference" class="detail-reference">Choose a claim from the table above.</p></div>
+          <button id="close-detail-button" class="icon-button" type="button" aria-label="Close recovery details">×</button>
+        </div>
+        <div id="detail-message" class="inline-message" role="status" aria-live="polite" hidden></div>
+        <div class="detail-grid">
+          <div class="detail-left-column">
+            <article class="inner-card">
+              <div class="inner-card-heading"><div><p class="section-label">RECOVERY CONFIGURATION</p><h3>Approved recovery target</h3></div><span id="account-state" class="state-pill">Not configured</span></div>
+              <p class="helper-copy">Set the amount the organization has approved for recovery on this claim. The customer's requested amount is not automatically treated as an approved target. Make sure eligibility has been reviewed first.</p>
+              <form id="target-form" class="recovery-form">
+                <div class="form-row">
+                  <div class="field-group"><label for="target-amount">Target amount</label><input id="target-amount" type="number" min="0.01" max="999999999999.99" step="0.01" inputmode="decimal" required placeholder="0.00"></div>
+                  <div class="field-group"><label>Currency</label><div id="target-currency" class="readonly-field">—</div></div>
+                </div>
+                <div class="field-group"><label for="target-reason">Reason / audit note</label><textarea id="target-reason" rows="3" minlength="3" maxlength="2000" required placeholder="Explain why this target is being set or adjusted…"></textarea></div>
+                <button id="save-target-button" class="button button-primary" type="submit">Save recovery target</button>
+                <p class="form-footnote">Target changes are audit-logged. The database blocks target changes while a payout is active or has already been paid.</p>
+              </form>
+            </article>
+
+            <article id="installment-card" class="inner-card" hidden>
+              <div class="inner-card-heading"><div><p class="section-label">VERIFIED FUNDS RECEIVED</p><h3>Record an installment</h3></div><span class="safe-chip">Append-only ledger</span></div>
+              <p class="helper-copy">Only record money that the business has actually received and verified. This action updates the ledger; it does not move money.</p>
+              <form id="installment-form" class="recovery-form">
+                <div class="form-row">
+                  <div class="field-group"><label for="installment-amount">Amount received</label><input id="installment-amount" type="number" min="0.01" max="999999999999.99" step="0.01" inputmode="decimal" required placeholder="0.00"></div>
+                  <div class="field-group"><label for="installment-date">Date received</label><input id="installment-date" type="datetime-local" required></div>
+                </div>
+                <div class="field-group"><label for="installment-reference">Source / transaction reference <span class="field-optional">Recommended</span></label><input id="installment-reference" type="text" maxlength="200" placeholder="Bank reference, remittance ID, etc."></div>
+                <div class="field-group"><label for="installment-note">Internal note <span class="field-optional">Optional</span></label><textarea id="installment-note" rows="2" maxlength="2000" placeholder="Record how the installment was verified…"></textarea></div>
+                <button id="record-installment-button" class="button button-primary" type="submit">Record verified installment</button>
+              </form>
+              <div class="ledger-list-heading"><h4>Ledger history</h4><span id="ledger-entry-count" class="muted-count">—</span></div>
+              <div id="ledger-entry-list" class="ledger-entry-list"><p class="muted-copy">Select a recovery account to load ledger history.</p></div>
+            </article>
+          </div>
+
+          <aside class="detail-right-column">
+            <article class="inner-card balance-card">
+              <p class="section-label">LIVE RECOVERY POSITION</p>
+              <div class="balance-amount-block"><span>Recovered so far</span><strong id="detail-recovered">—</strong></div>
+              <div class="balance-progress-track"><div id="balance-progress" class="balance-progress-fill"></div></div>
+              <div class="balance-progress-meta"><span id="detail-progress-label">—</span><span id="detail-progress-percent">—</span></div>
+              <div class="balance-line"><span>Approved target</span><strong id="detail-target">—</strong></div>
+              <div class="balance-line"><span>Outstanding</span><strong id="detail-outstanding">—</strong></div>
+              <div class="balance-line balance-line-eligibility"><span>Payout eligibility</span><strong id="detail-payout-eligibility">—</strong></div>
+              <p class="balance-warning">Payout eligibility is calculated by the database. Identity must be verified and the account active before a customer can request payout.</p>
+            </article>
+            <article class="inner-card payout-detail-card">
+              <p class="section-label">CASE DETAILS</p><h3 id="detail-claim-title">—</h3>
+              <div class="case-meta-list"><div><span>Claimant</span><strong id="detail-claimant">—</strong></div><div><span>Claim status</span><strong id="detail-claim-status">—</strong></div><div><span>Claim amount requested</span><strong id="detail-requested-amount">—</strong></div><div><span>Claim currency</span><strong id="detail-claim-currency">—</strong></div></div>
+            </article>
+          </aside>
+        </div>
+      </section>
+
+      <section class="panel payouts-panel" aria-labelledby="payouts-heading">
+        <div class="panel-heading">
+          <div><p class="section-label">CUSTOMER REQUESTS</p><h2 id="payouts-heading">Payout review</h2><p>Review requests and record decisions. The platform does not send funds automatically.</p></div>
+          <span id="payouts-count" class="result-count">Loading…</span>
+        </div>
+        <div id="payouts-list" class="payouts-list"><p class="table-placeholder">Loading payout requests…</p></div>
+        <div id="payouts-empty" class="empty-state" hidden><span class="empty-mark">✓</span><h3>No payout requests yet</h3><p>Eligible customers' requests will appear here once submitted.</p></div>
+      </section>
+
+      <footer class="recovery-footer"><span>Refund Operations · Development workspace</span><span>Do not mark a payout paid until the transfer is independently confirmed.</span></footer>
+    </main>
+  </div>
+</body>
+</html>

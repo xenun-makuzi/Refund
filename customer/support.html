@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#07151a">
+  <meta name="description" content="Create and track Refund support requests and complaints.">
+  <title>Help &amp; complaints | Refund</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/communications.css"><link rel="stylesheet" href="../css/support.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../js/config.js"></script><script src="../js/supabase-client.js"></script><script src="../js/support-tickets.js" defer></script>
+</head>
+<body class="communications-page support-page" data-workspace="customer">
+  <header class="comms-header"><a class="comms-brand" href="../index.html"><span class="comms-brand-mark">R</span><span>refund<span class="brand-period">.</span><small>CUSTOMER PORTAL</small></span></a><nav class="comms-nav" aria-label="Customer navigation"><a href="dashboard.html">Dashboard</a><a href="claims.html">My claims</a><a href="messages.html">Messages</a><a href="recovery.html">Recovery &amp; payouts</a><a href="loans.html">Loans</a><a href="notifications.html">Notifications</a></nav><div class="comms-account"><span id="support-user-email">Checking session…</span><button id="support-sign-out" type="button" class="comms-quiet-button">Sign out</button></div></header>
+  <main class="comms-main support-main">
+    <section class="comms-heading"><div><p class="comms-eyebrow">CUSTOMER WORKSPACE</p><h1>Help &amp; complaints</h1><p>Create a support request, ask a question about your account, or request a review of an unresolved issue. Keep sensitive information to what is needed to handle your request.</p></div><span class="support-trust-note">Private to your account</span></section>
+    <div id="support-alert" class="comms-alert" role="status" aria-live="polite" hidden></div>
+    <div class="support-layout">
+      <section class="support-panel" aria-labelledby="new-ticket-title">
+        <div class="support-panel-heading"><div><span class="comms-section-kicker">CONTACT THE TEAM</span><h2 id="new-ticket-title">Open a support request</h2><p>You'll receive a reference number and can reply from this page.</p></div></div>
+        <form id="support-create-form" class="support-form">
+          <label for="support-category">What do you need help with?</label>
+          <select id="support-category" required>
+            <option value="general">General question</option><option value="account_access">Account access</option><option value="identity_verification">Identity verification</option><option value="claim_issue">A claim or investigation</option><option value="recovery_payout">Recovery or payout</option><option value="loan_application">Loan application</option><option value="loan_withdrawal">Loan withdrawal</option><option value="complaint">Complaint or decision review</option><option value="privacy_request">Privacy request</option><option value="other">Other</option>
+          </select>
+          <label for="support-related-claim">Related claim <span class="support-optional">Optional</span></label>
+          <select id="support-related-claim"><option value="">Not related to a specific claim</option></select>
+          <label for="support-subject">Subject</label><input id="support-subject" type="text" required minlength="5" maxlength="180" placeholder="Briefly describe the issue">
+          <label for="support-initial-message">How can we help?</label><textarea id="support-initial-message" rows="5" required minlength="10" maxlength="5000" placeholder="Describe what happened and what help you need…"></textarea>
+          <div class="support-form-footer"><span>Do not include passwords, full card numbers, or private keys.</span><button id="support-create-submit" class="comms-primary-button" type="submit">Submit request <span aria-hidden="true">→</span></button></div>
+        </form>
+      </section>
+      <section class="support-panel support-list-panel" aria-labelledby="my-tickets-title">
+        <div class="support-panel-heading"><div><span class="comms-section-kicker">YOUR REQUESTS</span><h2 id="my-tickets-title">My support tickets</h2><p>Choose a request to review the conversation and status.</p></div><button id="support-refresh" type="button" class="comms-outline-button">Refresh</button></div>
+        <div class="support-list-toolbar"><label for="support-status-filter" class="visually-hidden">Filter by status</label><select id="support-status-filter"><option value="all">All statuses</option><option value="open">Open</option><option value="in_progress">In progress</option><option value="waiting_for_customer">Waiting for you</option><option value="escalated">Escalated</option><option value="resolved">Resolved</option><option value="closed">Closed</option></select></div>
+        <div id="support-ticket-list" class="support-ticket-list"><p class="comms-muted">Loading your support requests…</p></div>
+      </section>
+    </div>
+    <section id="support-ticket-detail" class="support-panel support-detail-panel" aria-labelledby="support-detail-title" hidden>
+      <div class="support-panel-heading support-detail-heading"><div><span class="comms-section-kicker">TICKET DETAILS</span><h2 id="support-detail-title">Choose a support request</h2><p id="support-detail-meta">Messages and updates will appear here.</p></div><span id="support-detail-status" class="support-status-chip">—</span></div>
+      <div id="support-thread" class="support-thread"><p class="comms-muted">Select a request to load the conversation.</p></div>
+      <form id="support-reply-form" class="support-reply-form"><label for="support-reply-body">Your reply</label><textarea id="support-reply-body" rows="3" minlength="1" maxlength="5000" required placeholder="Write a reply…"></textarea><div class="support-form-footer"><span>Replies on resolved tickets reopen them. Closed tickets cannot be replied to.</span><button id="support-reply-submit" class="comms-primary-button" type="submit">Send reply <span aria-hidden="true">→</span></button></div></form>
+      <div id="support-escalate-section" class="support-escalation"><button id="support-show-escalation" type="button" class="comms-outline-button">Request escalation</button><form id="support-escalate-form" hidden><label for="support-escalation-reason">Why does this need escalation?</label><textarea id="support-escalation-reason" rows="3" minlength="10" maxlength="2000" required placeholder="Explain what remains unresolved…"></textarea><div class="support-form-footer"><span>The team will be notified of your escalation request.</span><button id="support-escalate-submit" class="comms-primary-button" type="submit">Submit escalation</button></div></form></div>
+    </section>
+    <p class="comms-footnote">Support tickets are not a guarantee of a refund or loan approval. The team will review your request and respond through this portal.</p>
+  </main>
+</body></html>
