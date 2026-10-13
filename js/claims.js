@@ -645,6 +645,25 @@
       }
       currentProfile = profile;
 
+      // Partner-referred claims may have been created before this customer registered.
+      // Link eligible pre-created claims on this page too (not only on the dashboard).
+      // The RPC enforces confirmed email + verified partner + exact invited-email match.
+      if (currentProfile.onboarding_source === "partner_referral") {
+        const { data: linkedCount, error: linkError } = await client.rpc(
+          "claim_partner_referrals_for_current_user"
+        );
+        if (linkError) {
+          console.error("Could not link partner referral claims:", linkError);
+          setMessage(
+            elements.pageMessage,
+            "Your referral was found, but we couldn't finish matching any pre-created claims. Please refresh or contact support if your case still doesn't appear.",
+            "warning"
+          );
+        } else if (Number(linkedCount) > 0) {
+          console.info(`Linked ${linkedCount} partner claim(s) to the signed-in customer.`);
+        }
+      }
+
       if (currentProfile.account_status !== "active") {
         setMessage(elements.pageMessage, "Your account is currently inactive or suspended. You can review existing claims, but new submissions are disabled. Contact support if you believe this is an error.", "warning");
         if (elements.form) elements.form.querySelectorAll("input, select, textarea, button").forEach((el) => { el.disabled = true; });
