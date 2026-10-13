@@ -252,3 +252,53 @@ button:focus-visible, a:focus-visible { outline: 3px solid rgba(61, 151, 108, .3
 .verification-dashboard-action .button-primary { min-height: 35px; padding: 10px 12px; white-space: nowrap; }
 @media(max-width:720px) { .verification-dashboard-card { align-items: flex-start; flex-wrap: wrap; padding: 15px; gap: 12px; } .verification-dashboard-copy { flex: 1 1 calc(100% - 62px); } .verification-dashboard-action { flex-direction: row; align-items: center; justify-content: space-between; width: 100%; padding-left: 60px; } }
 @media(max-width:420px) { .recovery-ring-wrap,.recovery-ring-wrap svg { width: 60px; height: 60px; } .recovery-ring-wrap { flex-basis: 60px; } .recovery-ring-label { font-size: 12px; } .recovery-card-top { flex-wrap: wrap; } .recovery-primary-amount { font-size: 22px; } .verification-dashboard-action { padding-left: 0; } }
+
+
+/* Mobile customer navigation fix: keep the sidebar off-canvas until opened. */
+@media (max-width: 940px) {
+  .refund-dashboard { --sidebar-width: 0px; }
+  .refund-dashboard .dashboard-shell { overflow-x: clip; }
+  .refund-dashboard .dashboard-main-column {
+    width: 100%;
+    min-width: 0;
+    margin-left: 0 !important;
+  }
+  .refund-dashboard .sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: min(280px, 86vw);
+    max-width: 86vw;
+    min-width: 0;
+    padding: 24px 16px 16px;
+    box-sizing: border-box;
+    transform: translateX(-105%);
+    visibility: hidden;
+    pointer-events: none;
+    z-index: 1001;
+    transition: transform .24s ease, visibility .24s ease;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  .refund-dashboard .sidebar.is-open {
+    transform: translateX(0);
+    visibility: visible;
+    pointer-events: auto;
+    box-shadow: 14px 0 40px rgba(6,24,19,.18);
+  }
+  .refund-dashboard .mobile-menu-button { position: relative; z-index: 1003; flex: 0 0 34px; }
+  .refund-dashboard .mobile-nav-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    border: 0;
+    padding: 0;
+    background: rgba(4, 17, 15, .42);
+    cursor: pointer;
+  }
+  .refund-dashboard .mobile-nav-backdrop[hidden] { display: none !important; }
+}
+@media (min-width: 941px) {
+  .refund-dashboard .mobile-nav-backdrop { display: none !important; }
+}

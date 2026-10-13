@@ -486,13 +486,46 @@
     });
     $("#dashboard-refresh").addEventListener("click", loadDashboard);
     const menuButton = $("#mobile-menu-button");
-    menuButton?.addEventListener("click", () => {
-      const sidebar = $("#dashboard-sidebar");
-      const open = sidebar.classList.toggle("is-open");
-      menuButton.setAttribute("aria-expanded", String(open));
-      menuButton.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
-      menuButton.textContent = open ? "×" : "☰";
-    });
+    const sidebar = $("#dashboard-sidebar");
+    if (menuButton && sidebar) {
+      let backdrop = $("#mobile-nav-backdrop");
+      if (!backdrop) {
+        backdrop = document.createElement("button");
+        backdrop.type = "button";
+        backdrop.id = "mobile-nav-backdrop";
+        backdrop.className = "mobile-nav-backdrop";
+        backdrop.setAttribute("aria-label", "Close navigation");
+        backdrop.hidden = true;
+        document.body.append(backdrop);
+      }
+
+      const setMenuOpen = (open) => {
+        sidebar.classList.toggle("is-open", open);
+        menuButton.setAttribute("aria-expanded", String(open));
+        menuButton.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+        menuButton.textContent = open ? "×" : "☰";
+        backdrop.hidden = !open || window.matchMedia("(min-width: 941px)").matches;
+        document.body.classList.toggle("mobile-nav-open", open && window.matchMedia("(max-width: 940px)").matches);
+      };
+
+      menuButton.addEventListener("click", () => {
+        setMenuOpen(!sidebar.classList.contains("is-open"));
+      });
+      backdrop.addEventListener("click", () => setMenuOpen(false));
+      sidebar.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", () => setMenuOpen(false));
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && sidebar.classList.contains("is-open")) {
+          setMenuOpen(false);
+          menuButton.focus();
+        }
+      });
+      window.addEventListener("resize", () => {
+        if (window.matchMedia("(min-width: 941px)").matches) setMenuOpen(false);
+        else backdrop.hidden = !sidebar.classList.contains("is-open");
+      });
+    }
     await loadDashboard();
   }
 
