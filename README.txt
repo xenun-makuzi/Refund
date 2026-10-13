@@ -1,45 +1,35 @@
-REFUND PLATFORM - SECURE MESSAGING & IN-APP NOTIFICATIONS
+REFUND PARTNER REFERRAL CLAIM WORKFLOW — MIGRATION 010
 
-This package adds claim-linked customer/staff messaging and an in-app notification center.
-It requires the existing Refund Supabase project with migrations 001 through 004 applied.
+This module implements pre-created company-referred claims and secure account linking.
 
-INSTALL ORDER
-1. Back up or commit your current project.
-2. Supabase Dashboard > Refund > SQL Editor > New query.
-3. Paste the COMPLETE contents of database/005_secure_messaging_notifications.sql and run it once.
-4. Merge the supplied customer/, admin/, css/, and js/ files into the existing refund-homepage folder.
-5. Merge/replace the included existing HTML navigation files as appropriate. They add links for Messages and Notifications while keeping the existing dashboard design.
-6. Keep js/config.js and js/supabase-client.js unchanged. This package deliberately does not include either file.
-7. Start Live Server from index.html and sign in.
+INSTALL
+1. Back up the Supabase database and confirm migrations 001 and 002 are installed.
+2. Open Supabase > SQL Editor > New query and run the entire database/010_partner_referral_claims.sql file once.
+3. Merge this package into the root of the existing refund-homepage project.
+   Included files replace/add:
+   - admin/partner-referrals.html (new admin workspace)
+   - admin/dashboard.html (adds the Partner referrals navigation link)
+   - css/partner-referrals.css (new styles)
+   - js/partner-referrals.js (new admin workspace logic)
+   - js/dashboard.js (calls the secure claim-linking RPC before loading customer claims)
+   - js/register.js (requires the partner referral code for partner-referral registration)
+4. Keep js/config.js and js/supabase-client.js unchanged.
+5. Run Live Server, sign in as an admin, and open admin/partner-referrals.html.
 
-PAGES
-- customer/messages.html: claim-linked customer conversation view.
-- admin/messages.html: authorized staff view of conversations for accessible cases.
-- customer/notifications.html: customer's in-app notification list.
-- admin/notifications.html: staff member's own notifications.
+ADMIN FLOW
+- Create a partner organization and a unique referral code (4–100 letters/numbers/_/-).
+- Create a pre-referred claim and enter the customer's legal name and intended email.
+- Share the company's referral code with the intended customer using your approved communication channel.
 
-DATABASE SECURITY
-- Message inserts are permitted only through public.send_claim_message(...), which checks the claim owner or authorized staff role server-side.
-- Private staff notes remain in public.claim_activity with visibility='internal'; the chat is not a replacement for internal case notes.
-- Messages are readable only by the claim owner, admins, support agents, and the investigator assigned to the claim (where applicable).
-- Message read receipts are written via public.mark_claim_messages_read(...).
-- Notification rows can only be read by their recipient. Read status is changed through protected RPC functions.
-- In-app notifications are generated for customer-visible claim activity, loan decisions, loan withdrawal updates, recovery payout status updates, and claim messages.
-- This does not send email, SMS, push notifications, or money. Those integrations remain separate work.
+CUSTOMER FLOW
+- Customer registers using their own email and password, selects company/partner referral, enters the company name and referral code.
+- Customer confirms the email address and signs in.
+- Customer dashboard calls claim_partner_referrals_for_current_user(). The database only links claims if the Auth email is confirmed and exactly matches the invited email, and the verified partner matches the claim's partner.
+- The linked claim appears in the customer's claim list and dashboard. Partner-referred customers should not submit a duplicate generic claim.
 
-TESTING
-A. Run migration 005 as one complete script. Do not rerun migrations 001-004.
-B. Sign in as a regular customer with a claim and open customer/messages.html.
-C. Send a test message. Sign in as an authorized admin/support/assigned investigator and open admin/messages.html.
-D. Reply from staff; confirm it appears for the customer and notifications are created in user_notifications.
-E. Open customer/notifications.html and mark one notification and all notifications read.
-F. Test that a normal customer cannot open another user's claim conversation or mark another user's notification read.
-
-NAVIGATION FILES INCLUDED
-The package includes navigation updates for the customer dashboard/claims/recovery/loans pages and the admin claims/recovery/loans pages. If you have made your own later changes to those HTML files, merge only the links/cards instead of blindly overwriting your changes.
-
-NOTES
-- The chat is attached to a claim. General-purpose support tickets and complaints are a separate future module.
-- Messages are plain text and rendered with textContent to avoid HTML injection. No chat attachments are included.
-- The staff UI checks user_roles for staff roles, but database RLS and the send-message RPC are the actual security enforcement.
-- Test with non-sensitive development data before using real customer data.
+IMPORTANT
+- Customers do not log in using the company's name. They use their own email/password.
+- The partner code identifies the company; it does not by itself grant access to a claim.
+- The claim remains unassigned until the customer's email is confirmed and the exact email+partner match passes server-side.
+- Admin RPCs check admin privileges server-side. Never put a service-role key in frontend code.
+- Test with dummy accounts and claims before using real customer records. Confirm RLS and email-confirmation settings in the actual Supabase project.

@@ -112,6 +112,11 @@
       partnerNameInput?.focus();
       return;
     }
+    if (source === "partner_referral" && !partnerCode) {
+      showMessage("Enter the referral code provided by the company that referred you.", "error");
+      partnerCodeInput?.focus();
+      return;
+    }
     if (!termsAccepted) {
       showMessage("Please acknowledge that the current Terms and Privacy pages are drafts for this development build.", "error");
       document.querySelector("#accept-terms")?.focus();

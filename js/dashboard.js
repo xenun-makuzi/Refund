@@ -109,99 +109,29 @@
     const title = $("#identity-title");
     const desc = $("#identity-description");
     const badge = $("#identity-badge");
-    const panel = $("#identity-dashboard-card");
-    const panelTitle = $("#identity-dashboard-title");
-    const panelDesc = $("#identity-dashboard-description");
-    const panelStatus = $("#identity-dashboard-status");
-    const panelLink = $("#identity-dashboard-link");
-
     if (!profile) {
       strip.className = "identity-strip is-warning";
       icon.textContent = "!";
       title.textContent = "Profile setup is incomplete";
       desc.textContent = "Your authentication session is active, but your customer profile could not be loaded. Contact support if this persists.";
       badge.textContent = "Profile check";
-      if (panel) panel.classList.add("is-warning");
-      if (panelTitle) panelTitle.textContent = "Identity status unavailable";
-      if (panelDesc) panelDesc.textContent = "We couldn't load your profile verification status. Refresh or contact support before submitting a document.";
-      if (panelStatus) panelStatus.textContent = "Check required";
-      if (panelLink) { panelLink.textContent = "Contact support →"; panelLink.href = "support.html"; }
       return;
     }
-
     const identity = profile.identity_status || "unsubmitted";
     const account = profile.account_status || "active";
     const text = {
       verified: ["Identity verified", "Your identity is marked as verified. Payout requests still require full recovery and an active account."],
       pending: ["Identity review in progress", "Your identity details are awaiting review. Payout requests remain unavailable until verification is complete."],
-      rejected: ["Identity verification needs attention", "Your identity check was not approved. Review the note on the verification page and follow the next steps."],
-      action_required: ["Additional identity information needed", "Please review the latest note and submit an updated document if requested."],
+      rejected: ["Identity verification needs attention", "Your identity check was not approved. Contact support for next steps."],
+      action_required: ["Additional identity information needed", "Please check your messages or contact support for the information needed to continue."],
       unsubmitted: ["Complete identity verification", "Your identity is not yet verified. Some financial actions, including payout requests, remain unavailable."]
     };
     const selected = text[identity] || text.unsubmitted;
-    const activeAndVerified = identity === "verified" && account === "active";
-    strip.className = `identity-strip${activeAndVerified ? "" : identity === "rejected" || account !== "active" ? " is-danger" : " is-warning"}`;
-    icon.textContent = activeAndVerified ? "✓" : "!";
+    strip.className = `identity-strip${identity === "verified" && account === "active" ? "" : identity === "rejected" || account !== "active" ? " is-danger" : " is-warning"}`;
+    icon.textContent = identity === "verified" && account === "active" ? "✓" : "!";
     title.textContent = account !== "active" ? `Account ${labelForStatus(account).toLowerCase()}` : selected[0];
     desc.textContent = account !== "active" ? "Some actions may be restricted while your account is not active. Please contact support if you need help." : selected[1];
     badge.textContent = account !== "active" ? labelForStatus(account) : labelForStatus(identity);
-
-    if (panel) {
-      panel.classList.toggle("is-verified", activeAndVerified);
-      panel.classList.toggle("is-warning", !activeAndVerified && account === "active");
-      panel.classList.toggle("is-danger", account !== "active" || identity === "rejected");
-    }
-    if (panelTitle) panelTitle.textContent = account !== "active" ? "Account access is restricted" : ({
-      verified: "Identity verification complete",
-      pending: "Your documents are under review",
-      rejected: "Identity review needs attention",
-      action_required: "More information is needed",
-      unsubmitted: "Verify your identity"
-    }[identity] || "Verify your identity");
-    if (panelDesc) panelDesc.textContent = account !== "active"
-      ? "Identity submissions are unavailable while your account is not active. Contact support for assistance."
-      : ({
-          verified: "Your identity submission was approved. Payouts and other financial actions still have separate eligibility checks.",
-          pending: "Your document has been submitted. Please wait for an authorized reviewer; don't submit it again while this review is pending.",
-          rejected: "Your submission was not approved. Review the decision note and submit a new document if appropriate.",
-          action_required: "The review team needs an update. Open verification to read the note and upload a replacement document.",
-          unsubmitted: "Submit a clear government-issued document through our private upload form to start identity review."
-        }[identity] || text.unsubmitted[1]);
-    if (panelStatus) {
-      panelStatus.textContent = account !== "active" ? labelForStatus(account) : labelForStatus(identity);
-      panelStatus.className = `verification-dashboard-status${activeAndVerified ? " is-success" : identity === "rejected" || account !== "active" ? " is-danger" : " is-warning"}`;
-    }
-    if (panelLink) {
-      panelLink.href = account !== "active" ? "support.html" : "verification.html";
-      panelLink.innerHTML = account !== "active" ? "Contact support <span aria-hidden=\"true\">↗</span>" : ({
-        verified: "View verification <span aria-hidden=\"true\">↗</span>",
-        pending: "Check status <span aria-hidden=\"true\">↗</span>",
-        rejected: "Review & resubmit <span aria-hidden=\"true\">↗</span>",
-        action_required: "Update documents <span aria-hidden=\"true\">↗</span>",
-        unsubmitted: "Submit ID document <span aria-hidden=\"true\">↗</span>"
-      }[identity] || "Submit ID document <span aria-hidden=\"true\">↗</span>");
-    }
-  }
-
-  function buildCircularProgress(percent) {
-    const circumference = 2 * Math.PI * 24;
-    const wrapper = node("div", "recovery-ring-wrap");
-    wrapper.setAttribute("role", "img");
-    wrapper.setAttribute("aria-label", `Recovery progress ${Math.round(percent)} percent`);
-    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("viewBox", "0 0 64 64");
-    svg.setAttribute("aria-hidden", "true");
-    const track = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-    track.setAttribute("cx", "32"); track.setAttribute("cy", "32"); track.setAttribute("r", "24");
-    track.setAttribute("class", "recovery-ring-track");
-    const arc = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-    arc.setAttribute("cx", "32"); arc.setAttribute("cy", "32"); arc.setAttribute("r", "24");
-    arc.setAttribute("class", "recovery-ring-arc");
-    arc.style.strokeDasharray = String(circumference);
-    arc.style.strokeDashoffset = String(circumference * (1 - Math.min(100, Math.max(0, percent)) / 100));
-    svg.append(track, arc);
-    wrapper.append(svg, node("span", "recovery-ring-label", `${Math.round(percent)}%`));
-    return wrapper;
   }
 
   function renderMetrics({ activeClaimsCount, recoveryCount, approvedLoansCount, unreadCount }) {
@@ -254,7 +184,7 @@
       const top = node("div", "recovery-card-top");
       const amountWrap = node("div");
       amountWrap.append(node("div", "recovery-currency-label", "RECOVERED SO FAR"), node("div", "recovery-primary-amount", formatMoney(item.recovered, item.currency)), node("div", "recovery-primary-caption", `${item.accounts} recovery ${item.accounts === 1 ? "case" : "cases"} in ${item.currency}`));
-      top.append(amountWrap, buildCircularProgress(ratio), node("span", "recovery-currency-chip", item.currency));
+      top.append(amountWrap, node("span", "recovery-currency-chip", item.currency));
       card.append(top);
       const progress = node("div", "recovery-progress");
       const heading = node("div", "recovery-progress-heading");
@@ -325,7 +255,6 @@
   }
 
   function targetForNotification(item) {
-    if (item.notification_type === "identity_verification_update") return "verification.html";
     if (item.related_support_ticket_id) return `support.html?ticket=${encodeURIComponent(item.related_support_ticket_id)}`;
     if (item.related_claim_id) return `messages.html?claim=${encodeURIComponent(item.related_claim_id)}`;
     if (item.related_loan_application_id || item.related_loan_withdrawal_request_id) return "loans.html";
@@ -441,6 +370,10 @@
     if (refresh) { refresh.disabled = true; refresh.innerHTML = "<span aria-hidden=\"true\">↻</span> Refreshing…"; }
     try {
       const uid = currentUser.id;
+      // Link any pre-created partner claims after the customer has a confirmed email.
+      // The database RPC enforces exact email + verified partner matching.
+      const { error: referralLinkError } = await client.rpc("claim_partner_referrals_for_current_user");
+      if (referralLinkError) console.warn("Partner referral linking was not completed:", referralLinkError.message);
       const results = await Promise.all([
         read("profile", client.from("profiles").select("id, full_name, identity_status, account_status, onboarding_source").eq("id", uid).maybeSingle()),
         read("claims", client.from("claims").select("id, case_reference, title, category, status, created_at, updated_at").eq("user_id", uid).order("updated_at", { ascending: false }).limit(5)),
@@ -497,21 +430,12 @@
       const roles = rolesResult.data || [];
       const isAdmin = roles.some((item) => ["admin", "super_admin"].includes(item.role));
       const existingAdminLink = document.querySelector("#customer-admin-workspace-link");
-      const existingIdentityAdminLink = document.querySelector("#customer-identity-admin-link");
-      if (isAdmin) {
+      if (isAdmin && !existingAdminLink) {
+        const link = node("a", "side-nav-link", "Admin workspace ↗");
+        link.id = "customer-admin-workspace-link";
+        link.href = "../admin/claims.html";
         const nav = document.querySelector(".side-nav");
-        if (nav && !existingAdminLink) {
-          const link = node("a", "side-nav-link", "Admin workspace ↗");
-          link.id = "customer-admin-workspace-link";
-          link.href = "../admin/claims.html";
-          nav.append(link);
-        }
-        if (nav && !existingIdentityAdminLink) {
-          const link = node("a", "side-nav-link", "Identity review ↗");
-          link.id = "customer-identity-admin-link";
-          link.href = "../admin/identity-verification.html";
-          nav.append(link);
-        }
+        if (nav) nav.append(link);
       }
 
       const supportLink = document.querySelector('a[href="support.html"]');
